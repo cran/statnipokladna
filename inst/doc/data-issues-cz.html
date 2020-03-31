@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Známé datové zádrhele</title>
+
+
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Známé datové zádrhele</h1>
+
+
+
+<div id="známé-datové-zádrhele-a-nekonzistence" class="section level2">
+<h2>Známé datové zádrhele a nekonzistence</h2>
+<ul>
+<li>v některých souborech jsou záporná čísla zapsaná tak, že minus je na konci, takže většina parserů sloupec načte jako text a převod na číslo běžným způsobem nefunguje</li>
+<li><del>některé CSV soubory jsou oddělované čárkou (a obsahují desetinnou tečku), jiné středníkem (s desetinnou čárkou)</del></li>
+<li>u číselníků je třeba myslet na to, že můžou obsahovat duplicitní položky (např. stejný kód, jiný název), z nichž každá platí v jiném časovém období - pokud se to neodfiltruje, můžou při napojení JOINem vznikat duplicity.</li>
+</ul>
+<div id="doplněno-28.-11.-2019" class="section level3">
+<h3>Doplněno 28. 11. 2019:</h3>
+<ul>
+<li>v číselnících mohou být dvě stejné položky platné v jeden moment, tj. i po profiltrování přes datum (příklad položka 1381 v číselníku položek) - možná je to metodicky správně, ale rozhodně neintuitivní a je potřeba to ošetřit při napojování číselníků</li>
+<li>URL prohlížeče číselníku ne vždy odpovídá jeho názvu/URL jeho XML souboru (příklad <a href="https://monitor.statnipokladna.cz/2019/zdrojova-data/prohlizec-ciselniku/smeruc?date=28.11.2019">prohlizec-ciselniku/smeruc</a> x <a href="https://monitor.statnipokladna.cz/data/uctosnova.xml">/uctosnova.xml</a>)</li>
+<li>názvy sloupců označující fáze rozpočtového cyklu (ZU_ROZ*) se liší mezi obcemi (výkaz FINM) a státem (výkaz FINU) - není to chyba, ale je to třeba vědět</li>
+</ul>
+</div>
+<div id="doplněno-28.-2.-2020" class="section level3">
+<h3>Doplněno 28. 2. 2020:</h3>
+<ul>
+<li>v číselníku účelových znaků je položka 27983, což je část OP Doprava pro Prahu v roce 2015/16, označena platností začínající po roce 2200.</li>
+<li>v datech obcí se v roce 2015 vyskytují příjmy s účelovými znaky norských fondů 95028/95528, ačkoli tato položka číselníku platí až od roku 2016.</li>
+<li>ID položky v datech FINM_2017 doplnění na délku 5 o leading zero, která v XML číselníku není</li>
+</ul>
+</div>
+<div id="doplněno-13.-12.-2019" class="section level3">
+<h3>Doplněno 13. 12. 2019:</h3>
+<ul>
+<li>čistě rozpočtářský poznatek: jsou v Česku obce - mj. Praha - které své příjmy z vlastní činnosti, prodeje majetku a podobných věcí nerozpočtují, ale považují je za část své hospodářské činnosti; v Praze je to dáno statutem. Tyto příjmy se pak do rozpočtu dostávají jako transfer v položce 4131 “Převody z vlastních fondů hospodářské (podnikatelské) činnosti”. Není tedy rozumné srovnávat příjmy z vlastní činnosti aj. nebo z transferů mezi obcemi, pokud nevíme, jak to která obec rozpočtově a účetně vykazuje; srovnání může jít líp před výkaz zisků a ztrát než přes rozpočet, je to ale v mnohém hrubší.</li>
+</ul>
+</div>
+<div id="doplněno-20.-1.-2019" class="section level3">
+<h3>Doplněno 20. 1. 2019</h3>
+<ul>
+<li>CSV soubory jsou pojmenované jinak v letech 2010-12 (bez datumu v názvu)</li>
+<li>IČO v souborech 2010-12 je “obohaceno” o dvě nuly na začátku</li>
+<li>v některých letech jsou stejná data rozdělená do víc souborů (napříklady rozvahy a výkazy zisků a ztrát 2018, kde jsou MČ zvlášť)</li>
+</ul>
+</div>
+</div>
+<div id="co-v-datech-není-nebo-jsem-to-nenašel" class="section level2">
+<h2>Co v datech není nebo jsem to nenašel</h2>
+<ul>
+<li>zdrojové třídění u rozpočtů samospráv - jen incidentálně jako součást reportu účelového financování</li>
+<li>údaje o regulaci zaměstnanosti ve veřejném sektoru neboli rozpočtované a skutečné počty zaměstnanců a průměrné platy, ač se sledují a částečně zveřejňují ve státním závěrečném účtu, viz <a href="https://petrbouchal.github.io/urednici2019/">petrbouchal/urednici2019</a></li>
+<li>informace o tom, na jakém místě se peníze utratily (pokud vím, plošně se nesleduje, něco je v CEDRu a docela se to ví u eurofondů)</li>
+</ul>
+</div>
+<div id="kde-by-bylo-fajn-mít-lepší-dokumentaci" class="section level2">
+<h2>Kde by bylo fajn mít lepší dokumentaci</h2>
+<ul>
+<li>v balíku ROZVAHA nejsou zdokumentované jednotlivé soubory: v excelové dokumentaci je jen ROZV.csv, v balíku ale ROZV[MC]?[1-2].csv; u …MC… jde asi o městské části Prahy, ale není to zjevné (toto se týká jen roku 2018).</li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
