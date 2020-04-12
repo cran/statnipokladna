@@ -1,15 +1,15 @@
 
 #' List of available codelists
 #'
-#' Contains IDs and names of all (most) available codelists that can be retrieved by get_codelist.
+#' Contains IDs and names of all (most) available codelists that can be retrieved by sp_get_codelist.
 #'
-#' The `id` is to be used as the `codelist_id` parameter in `get_codelist`.
-#' See <https://monitor.statnipokladna.cz/2019/zdrojova-data/ciselniky> for a more detailed
+#' The `id` is to be used as the `codelist_id` parameter in `sp_get_codelist`.
+#' See <https://monitor.statnipokladna.cz/datovy-katalog/ciselniky> for a more detailed
 #' descriptions and a GUI for exploring the lists.
 #'
 #' @format A data frame with 27 rows and 2 variables:
 #' \describe{
-#'   \item{\code{id}}{character. ID, used as `codelist_id` argument in `get_codelist`.}
+#'   \item{\code{id}}{character. ID, used as `codelist_id` argument in `sp_get_codelist`.}
 #'   \item{\code{name}}{character. Short name, mostly corresponds to title used on statnipokladna.cz.}
 #' }
 #' @family Lists of available entities
@@ -56,11 +56,12 @@ sp_codelists <- tibble::tribble(~id, ~name,
 #' are looking to expand, e.g. the codes in column paragraf can be expanded by codelist paragraf.
 #'
 #' The processing ensures that the resulting codelist can be correctly joined to
-#' the data, autamatically using `add_codelist()` or manually.
+#' the data, automatically using `sp_add_codelist()` or manually.
 #' The entire codelist is downloaded and not filtered for any particular date.
 #'
-#' Codelists XML files are stored in a temporary directory as determined by `tempdir()`
+#' Codelist XML files are stored in a temporary directory as determined by `tempdir()`
 #' and persist per session to avoid redownloads.
+#'
 #'
 #' @param codelist_id A codelist ID. See `id` column in `sp_codelists` for a list of available codelists.
 #' @param n Number of rows to return. Default (NULL) means all. Useful for quickly inspecting a codelist.
@@ -139,7 +140,7 @@ sp_get_codelist_viewer <- function(codelist_id, open = TRUE) {
   if(!(codelist_id %in% sp_codelists$id)) stop("Not a valid codelist ID")
   codelist_name <- sp_codelists[sp_codelists$id == codelist_id, "name"]
   usethis::ui_info("Building URL for codelist {usethis::ui_value(codelist_id)} - {usethis::ui_value(codelist_name)}")
-  x <- stringr::str_glue("{sp_base_url}/2019/zdrojova-data/prohlizec-ciselniku/{codelist_id}")
+  x <- stringr::str_glue("{sp_base_url}/datovy-katalog/ciselniky/prohlizec/{codelist_id}")
   if(open) utils::browseURL(x)
   return(x)
 }
@@ -160,9 +161,9 @@ switch_minus <- function(string) {
 #'
 #' Joins a provided codelist, or downloads and processes one if necessary, and adds it to the data.
 #'
-#' The `data` argument should be a data frame produced by `get_table()` If this is true, the `period_column` argument is not needed.
+#' The `data` argument should be a data frame produced by `sp_get_table()` If this is true, the `period_column` argument is not needed.
 #' The `codelist` argument, if a data frame, should be a data frame produced by
-#' `get_codelist()`. Specifically, it assumes it contains the following columns:
+#' `sp_get_codelist()`. Specifically, it assumes it contains the following columns:
 #'
 #' - start_date, a date
 #' - end_date, a date
@@ -176,10 +177,15 @@ switch_minus <- function(string) {
 #' Codelist-originating columns in the resulting data frame are renamed so they do not interfere with
 #' joining additional codelists, perhaps in a single pipe call.
 #'
-#' @param data a data frame returned by `get_table()`.
-#' @param codelist The codelist to add. Either a character vector of length one (see `sp_tables` for possible values), or a data frame returned by `get_codelist()`.
+#' Note that some codelists are "secondary" and can only be joined onto other codelists.
+#' If a codelist does not join using `sp_add_codelis()`, store the output of `sp_get_codelist()` and join
+#' it manually using `dplyr`.
+#'
+#' @param data a data frame returned by `sp_get_table()`.
+#' @param codelist The codelist to add. Either a character vector of length one (see `sp_tables` for possible values), or a data frame returned by `sp_get_codelist()`.
+#' @param by character. Columns by which to join the codelist. Same form as for `dplyr::left_join()``.`.
 #' @param dest_dir character. Directory in which downloaded files will be stored. Defaults to `tempdir()`.
-#' @param period_column Unquoted column name of column identifying the data period in `data`. Leave to default if you have not changed the `data` object returned by `get_table()`.
+#' @param period_column Unquoted column name of column identifying the data period in `data`. Leave to default if you have not changed the `data` object returned by `sp_get_table()`.
 #' @param redownload Redownload even if file has already been downloaded? Defaults to FALSE.
 #' @return A data frame of same length as `data`, with added columns from `codelist`. See Details.
 #' @family Core workflow
@@ -198,22 +204,36 @@ switch_minus <- function(string) {
 #'   sp_add_codelist(par)
 #' }
 sp_add_codelist <- function(data, codelist = NULL, period_column = .data$period_vykaz,
-                         redownload = FALSE,
-                         dest_dir = tempdir()) {
+                            by = NULL,
+                            redownload = FALSE,
+                            dest_dir = tempdir()) {
   if(is.null(codelist)) stop("Please supply a codelist")
   # print(rlang::as_label({{period_column}}))
   stopifnot("data.frame" %in% class(data),
             "data.frame" %in% class(codelist) | is.character(codelist))
   if(is.character(codelist)) stopifnot(length(codelist) == 1)
+
+
+
   if(is.character(codelist)) {
-    cl_data <- get_codelist(codelist, redownload = redownload,
+    cl_data <- sp_get_codelist(codelist, redownload = redownload,
                             dest_dir = dest_dir)
     codelist_name <- codelist
   } else {
     cl_data <- codelist
     codelist_name <- deparse(substitute(codelist))
   }
-  slepit <- function(.x, .y) {
+  common_columns <- names(data)[names(data) %in% names(cl_data)]
+  overlap <- length(common_columns)
+  if (overlap > 1 & is.null(by)) {
+    usethis::ui_info(c("Joining on {overlap} columns: {stringr::str_c(common_columns, collapse = ', ')}.",
+                       "This may indicate a problem with the data.",
+                       "Set {usethis::ui_field('by')} if needed."))
+  } else if(overlap == 0) {usethis::ui_stop(c("No columns to join by.",
+                                              "Are you sure you are merging the right codelist onto the right data?",
+                                              "Set {usethis::ui_field('by')} if needed."))}
+
+    slepit <- function(.x, .y) {
     # print(.x)
     # print(.y)
     nrows_start <- nrow(.x)
@@ -225,26 +245,28 @@ sp_add_codelist <- function(data, codelist = NULL, period_column = .data$period_
       dplyr::rename_at(dplyr::vars(dplyr::ends_with("nazev")), ~paste0(codelist_name, "_", .))
 
     # print(codelist_filtered)
-    slp <- dplyr::left_join(.x, codelist_filtered)
+    slp <- suppressMessages(dplyr::left_join(.x, codelist_filtered, by = by))
     if(nrow(slp) != nrows_start) {
-      errmsg <- stringr::str_glue(
-        "Something went wrong with matching the codelist to the data for period {this_period}.
-        Please inspect the dates on the codelist to make sure there are no duplicate
-        items valid for one given date.\nYou may want to filter/edit the codelist manually
-        and pass it to the add_codelist function as an object."
-      )
-      stop(errmsg)
+      usethis::ui_stop(c("Something went wrong with matching the codelist to the data for period {this_period}.",
+        "Please inspect the dates on the codelist to make sure there are no duplicate items valid for one given date.",
+        "You may want to filter/edit the codelist manually and pass it to the add_codelist function as an object."))
       }
     return(slp)
   }
 
-  slepeno <- data %>%
-    dplyr::ungroup() %>%
-    dplyr::group_by({{period_column}}) %>%
-    dplyr::group_map(slepit, keep = TRUE) %>%
-    dplyr::bind_rows()
+  if("start_date" %in% names(cl_data) & "end_date" %in% names(cl_data)) {
+    slepeno <- data %>%
+      dplyr::ungroup() %>%
+      dplyr::group_by({{period_column}}) %>%
+      dplyr::group_map(slepit, keep = TRUE) %>%
+      dplyr::bind_rows()
+  } else {
+    slepeno <- suppressMessages(data %>%
+      dplyr::left_join(cl_data, by = by))
+  }
   return(slepeno)
 }
+
 
 get_codelist_url <- function(codelist_id, check_if_exists = TRUE) {
   if(!(codelist_id %in% sp_codelists$id)) usethis::ui_stop("Not a valid codelist ID")
@@ -252,9 +274,9 @@ get_codelist_url <- function(codelist_id, check_if_exists = TRUE) {
   if(!curl::has_internet()) usethis::ui_stop(c("No internet connection. Cannot continue. Retry when connected.",
                                                "If you need offline access to the data across R sessions, set the {ui_field('dest_dir')} parameter."))
   usethis::ui_info("Building URL for codelist {usethis::ui_value(codelist_id)} - {usethis::ui_value(codelist_name)}")
-  x <- stringr::str_glue("{sp_base_url}/data/{codelist_id}.xml")
+  x <- stringr::str_glue("{sp_base_url}/data/xml/{codelist_id}.xml")
   if(check_if_exists) {
-    iserror <- httr::http_error(x, httr::config(followlocation = 0L), USE.NAMES = FALSE)
+    iserror <- httr::http_error(x)
     if(iserror) usethis::ui_stop("Codelist XML for a codelist with this ID does not exist")
   }
   return(x)

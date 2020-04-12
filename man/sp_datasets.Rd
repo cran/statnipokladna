@@ -6,7 +6,7 @@
 \title{List of available datasets}
 \format{A data frame with 9 rows and 3 variables:
 \describe{
-\item{\code{id}}{character. Dataset ID, used as \code{dataset_id} argument to \code{get_dataset}.}
+\item{\code{id}}{character. Dataset ID, used as \code{dataset_id} argument to \code{sp_get_dataset}.}
 \item{\code{name}}{character. Dataset name, mostly corresponds to title on the statnipokladna GUI.}
 }}
 \usage{
@@ -16,7 +16,7 @@ sp_datasets
 Contains IDs and names of all available datasets that can be retrieved by get_dataset.
 }
 \details{
-See \url{https://monitor.statnipokladna.cz/2019/zdrojova-data/transakcni-data} for a more detailed descriptions
+See \url{https://monitor.statnipokladna.cz/datovy-katalog/transakcni-data} for a more detailed descriptions
 of the datasets.
 }
 \seealso{

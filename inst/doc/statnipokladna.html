@@ -224,6 +224,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>The data published on <a href="https://monitor.statnipokladna.cz/datovy-katalog/" class="uri">https://monitor.statnipokladna.cz/datovy-katalog/</a> are exports from a much larger database used by Státní pokladna (SP), a comprehensive budgeting and financial/accounting reporting system for most Czech public organisations.</p>
 <p>In some ways the data is a secondary product not always dogfooded by the data maintainers, so sometimes (though not often) there are small inconsistencies on formats and content.</p>
 <p>Several datasets are not published in open data but are available in the <a href="https://monitor.statnipokladna.cz/analyza/#">analytical tool</a> (only in Czech) or the web-based overviews. This relates to data on budget preparation and budgetary responsibility, respectively.</p>
+<div id="exports-and-time-periods" class="section level5 bs-callout bs-callout-red">
+<h5>Exports and time periods</h5>
+<p>How data for different time periods is exported differs by dataset. This has significant implications for how you get to usable full-year numbers or time series in different tables.</p>
+<p>For budget datasets <code>finm</code> and <code>finu</code> (tables <code>budget-central-old*</code> and <code>budget-local*</code>) and all accounting reports, the data dump for month N will contain data describing what was reported at month M. The <code>period_vykaz</code> column will contain only one unique value. (For budget data, the <code>budget_adopted</code> column does not change throughout the year, but the others do. The <code>budget_spending</code> column contains spending up to month M.) To see time series of spending throughout a year, you need to download multiple datasets (which <code>sp_get_table</code>). To get a full-year’s spending, run <code>sp_get_table(&quot;table_id&quot;, year = &quot;YYYY&quot;)</code> to get the 12th month.</p>
+<p>In the newer central budget reports, <code>budget-central</code> (dataset <code>misris</code>) and <code>budget-state-funds</code> (dataset <code>finsf</code>), data for month M will contain separate rows for spending <em>in</em> (not <em>up to</em>) each month of the year up to month M. To get cumulative spending up to month M in year Y, you need to only download the dataset for month M and then sum the rows in that table. To get a full-year’s spending, run <code>sp_get_table(&quot;table_id&quot;, year = &quot;YYYY&quot;)</code> to get the 12th month, <em>then sum the values</em> across the months contained in the resulting data frame.</p>
+</div>
 </div>
 <div id="types-of-data" class="section level3">
 <h3>Types of data</h3>
@@ -233,13 +239,21 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li>the actual report/return data (what the SP system calls “transaction data”)</li>
 </ul>
 <p><strong>Codelists</strong> are generally long lists of metadata items. These allow you to “translate” codes contained in return data. Codes identify individual lines, telling you which categories the value in that line belongs to, often across multiple categorisations (see <a href="#working-with-budget-data">Working with budget data</a>.)</p>
+<div id="codelists-and-time-periods" class="section level5 bs-callout bs-callout-orange">
+<h5>Codelists and time periods</h5>
 <p>One thing to bear in mind is that codelist data contains all items in that codelist, regardless of the time periods for which the item is applicable. That means that for a given code ID in a codelist, there may be duplicates distinguishable only by their validity range.</p>
 <p>The <code>sp_add_codelist()</code> function tries to take care of this for you, but may not success if there are oddities in the data, e.g. one code with two items valid for the same date. In that case you get an informative error message; you should then resolve the duplicates manually using data returned by <code>sp_get_codelist()</code> and supply the edited data to <code>sp_add_codelist()</code> as an object.</p>
-<p>You can see the list of available codelists at <a href="https://monitor.statnipokladna.cz/datovy-katalog/ciselniky" class="uri">https://monitor.statnipokladna.cz/datovy-katalog/ciselniky</a>. When I refer to codelists below, I use the ID which you can supply as the <code>&quot;codelist_id&quot;</code> parameter to <code>sp_add_codelist()</code>.</p>
+</div>
+<div id="primary-and-secondary-codelists" class="section level5 bs-callout bs-callout-orange">
+<h5>Primary and secondary codelists</h5>
+<p>Note also that there are two kinds of codelists: some can be joined to core data, others are joined to another codelist, in effect decoding some items in that codelist. Currently the package cannot handle the latter type automatically, so you need to save the output of <code>sp_get_codelist()</code> into an object and joit it yourself using <code>dplyr</code>.</p>
+<p>You can see the list of available codelists at <a href="https://monitor.statnipokladna.cz/datovy-katalog/ciselniky" class="uri">https://monitor.statnipokladna.cz/datovy-katalog/ciselniky</a> and in <code>sp_codelists</code>. When I refer to codelists below, I use the ID which you can supply as the <code>&quot;codelist_id&quot;</code> parameter to <code>sp_add_codelist()</code>.</p>
 <p>The codelist that you will generally want for comparing organisations is called “ucjed”; this contains metadata on all organisations covered by the data. It is huge so you will want to store it somewhere after you have retrieved (and processed and filtered if relevant.)</p>
+<p>Note that some codelists can only be joined onto other codelists, e.g. the <code>ucjed</code> codelist, which contains most metadata on reporting organisations, has several columns named <code>somethings_id</code>. Those columns can be “decoded” using using the respective <code>something</code> codelist.</p>
 <p><strong>Return data</strong> come broadly in two kinds: budgetary and accounting - see below for how to work with each of them, as the logic differs markedly. Return data come in ZIP files, which can contain on or more files, each with a return (I call them tables for more generality, hence the <code>sp_get_table()</code> function.)</p>
 <p>You can see the list of returns which <code>statnipokladna</code> can process in the <code>sp_tables</code> data frame.</p>
 <p>While the <code>sp_get_table()</code> returns a data frame with column names understandable in English, codelists only exist in Czech.</p>
+</div>
 </div>
 <div id="basic-structure-of-data-in-published-zip-files" class="section level3">
 <h3>Basic structure of data in published ZIP files</h3>
@@ -249,6 +263,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>Often, there will be multiple returns in one dataset (ZIP file), each in a differently named CSV file. This is particularly the case for budget data.</p>
 <p>All CSV files contain some common columns, notably those identifying the organisation, its geography, and its place in the public sector. Note that the geography is derived from the seat of the organisation, not the location of the spending.</p>
 <p>You can see the list of datasets (ZIP files) which <code>statnipokladna</code> can process in the <code>sp_datasets</code> data frame.</p>
+<div id="central-budgets-and-codelists" class="section level5 bs-callout bs-callout-orange">
+<h5>Central budgets and codelists</h5>
+<p>The more recent central budgets stored in the <code>budget-central</code> table (<code>misris</code> dataset) require a different codelist for sectoral (“paragraf”) breakdown. Use the <code>paragraf_long</code> codelist, not <code>paragraf</code>. If you use <code>paragraf</code>, <code>sp_add_codelist()</code> will technically work but the joined columns will be empty.</p>
+</div>
 </div>
 <div id="coverage" class="section level3">
 <h3>Coverage</h3>

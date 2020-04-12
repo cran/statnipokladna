@@ -2,7 +2,7 @@
 title: "Getting started with statnipokladna"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{statnipokladna}
+  %\VignetteIndexEntry{Getting Started with statnipokladna}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -26,6 +26,14 @@ In some ways the data is a secondary product not always dogfooded by the data ma
 
 Several datasets are not published in open data but are available in the [analytical tool](https://monitor.statnipokladna.cz/analyza/#) (only in Czech) or the web-based overviews. This relates to data on budget preparation and budgetary responsibility, respectively.
 
+##### Exports and time periods {.bs-callout .bs-callout-red}
+
+How data for different time periods is exported differs by dataset. This has significant implications for how you get to usable full-year numbers or time series in different tables.
+
+For budget datasets `finm` and `finu` (tables `budget-central-old*` and `budget-local*`) and all accounting reports, the data dump for month N will contain data describing what was reported at month M. The `period_vykaz` column will contain only one unique value. (For budget data, the `budget_adopted` column does not change throughout the year, but the others do. The `budget_spending` column contains spending up to month M.) To see time series of spending throughout a year, you need to download multiple datasets (which `sp_get_table`). To get a full-year's spending, run `sp_get_table("table_id", year = "YYYY")` to get the 12th month.
+
+In the newer central budget reports, `budget-central` (dataset `misris`) and `budget-state-funds` (dataset `finsf`), data for month M will contain separate rows for spending *in* (not *up to*) each month of the year up to month M. To get cumulative spending up to month M in year Y, you need to only download the dataset for month M and then sum the rows in that table. To get a full-year's spending, run `sp_get_table("table_id", year = "YYYY")` to get the 12th month, *then sum the values* across the months contained in the resulting data frame.
+
 ### Types of data
 
 Zooming in on the data that is available from the open data dumps, there are two kinds:
@@ -35,14 +43,25 @@ Zooming in on the data that is available from the open data dumps, there are two
 
 **Codelists** are generally long lists of metadata items. These allow you to "translate" codes contained in return data. Codes identify individual lines, telling you which categories the value in that line belongs to, often across multiple categorisations (see [Working with budget data].)
 
+##### Codelists and time periods {.bs-callout .bs-callout-orange}
+
 One thing to bear in mind is that codelist data contains all items in that codelist, regardless of the time periods for which the item is applicable. That means that for a given code ID in a codelist, there may be duplicates distinguishable only by their validity range.
 
-The `sp_add_codelist()` function tries to take care of this for you, but may not success if there are oddities in the data, e.g. one code with two items valid for the same date. In that case you get an informative error message; you should then resolve the duplicates manually using data returned by `sp_get_codelist()` and supply the edited data to `sp_add_codelist()` as an object.
+The `sp_add_codelist()` function tries to take care of this for you, but may not success if there are oddities in the data, e.g. one code with two items valid for the same date. 
+In that case you get an informative error message; you should then resolve the duplicates manually using data returned by `sp_get_codelist()` and supply the edited data to `sp_add_codelist()` as an object.
 
-You can see the list of available codelists at https://monitor.statnipokladna.cz/datovy-katalog/ciselniky. 
+##### Primary and secondary codelists {.bs-callout .bs-callout-orange}
+
+Note also that there are two kinds of codelists: some can be joined to core data, others are joined to another codelist, in effect decoding some items in that codelist. 
+Currently the package cannot handle the latter type automatically, so you need to save the output of `sp_get_codelist()` into an object and joit it yourself using `dplyr`.
+
+
+You can see the list of available codelists at https://monitor.statnipokladna.cz/datovy-katalog/ciselniky and in `sp_codelists`.
 When I refer to codelists below, I use the ID which you can supply as the `"codelist_id"` parameter to `sp_add_codelist()`.
 
 The codelist that you will generally want for comparing organisations is called "ucjed"; this contains metadata on all organisations covered by the data. It is huge so you will want to store it somewhere after you have retrieved (and processed and filtered if relevant.)
+
+Note that some codelists can only be joined onto other codelists, e.g. the `ucjed` codelist, which contains most metadata on reporting organisations, has several columns named `somethings_id`. Those columns can be "decoded" using using the respective `something` codelist.
 
 **Return data** come broadly in two kinds: budgetary and accounting - see below for how to work with each of them, as the logic differs markedly. Return data come in ZIP files, which can contain on or more files, each with a return (I call them tables for more generality, hence the `sp_get_table()` function.)
 
@@ -63,6 +82,11 @@ Often, there will be multiple returns in one dataset (ZIP file), each in a diffe
 All CSV files contain some common columns, notably those identifying the organisation, its geography, and its place in the public sector. Note that the geography is derived from the seat of the organisation, not the location of the spending.
 
 You can see the list of datasets (ZIP files) which `statnipokladna` can process in the `sp_datasets` data frame.
+
+##### Central budgets and codelists {.bs-callout .bs-callout-orange}
+
+The more recent central budgets stored in the `budget-central` table (`misris` dataset) require a 
+different codelist for sectoral ("paragraf") breakdown. Use the `paragraf_long` codelist, not `paragraf`. If you use `paragraf`, `sp_add_codelist()` will technically work but the joined columns will be empty.
 
 ### Coverage
 
