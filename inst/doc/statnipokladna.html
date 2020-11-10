@@ -14,6 +14,67 @@
 
 <title>Getting started with statnipokladna</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 
@@ -216,7 +277,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <blockquote>
-<p>Note for Czech speakers: a previous note covering similar information, sometimes in more depth, is available in Czech <a href="how-the-data-works-cz.html">the Czech guide to the data</a>.</p>
+<p>Note for Czech speakers: a previous note covering similar information, sometimes in more depth, is available in <a href="how-the-data-works-cz.html">the Czech guide to the data</a>.</p>
 </blockquote>
 <p>This vignette provides background on the data that <code>statnipokladna</code> provides access to. Make sure you read the relevant parts before analysing the data: it can be quite complicated and it is easy to make mistakes and end up with wrong numbers.</p>
 <div id="the-nature-of-the-data" class="section level3">
@@ -225,10 +286,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>In some ways the data is a secondary product not always dogfooded by the data maintainers, so sometimes (though not often) there are small inconsistencies on formats and content.</p>
 <p>Several datasets are not published in open data but are available in the <a href="https://monitor.statnipokladna.cz/analyza/#">analytical tool</a> (only in Czech) or the web-based overviews. This relates to data on budget preparation and budgetary responsibility, respectively.</p>
 <div id="exports-and-time-periods" class="section level5 bs-callout bs-callout-red">
-<h5>Exports and time periods</h5>
+<h5 class="bs-callout bs-callout-red">Exports and time periods</h5>
 <p>How data for different time periods is exported differs by dataset. This has significant implications for how you get to usable full-year numbers or time series in different tables.</p>
-<p>For budget datasets <code>finm</code> and <code>finu</code> (tables <code>budget-central-old*</code> and <code>budget-local*</code>) and all accounting reports, the data dump for month N will contain data describing what was reported at month M. The <code>period_vykaz</code> column will contain only one unique value. (For budget data, the <code>budget_adopted</code> column does not change throughout the year, but the others do. The <code>budget_spending</code> column contains spending up to month M.) To see time series of spending throughout a year, you need to download multiple datasets (which <code>sp_get_table</code>). To get a full-year’s spending, run <code>sp_get_table(&quot;table_id&quot;, year = &quot;YYYY&quot;)</code> to get the 12th month.</p>
-<p>In the newer central budget reports, <code>budget-central</code> (dataset <code>misris</code>) and <code>budget-state-funds</code> (dataset <code>finsf</code>), data for month M will contain separate rows for spending <em>in</em> (not <em>up to</em>) each month of the year up to month M. To get cumulative spending up to month M in year Y, you need to only download the dataset for month M and then sum the rows in that table. To get a full-year’s spending, run <code>sp_get_table(&quot;table_id&quot;, year = &quot;YYYY&quot;)</code> to get the 12th month, <em>then sum the values</em> across the months contained in the resulting data frame.</p>
+<p>For budget datasets <code>finm</code> and <code>finu</code> (tables <code>budget-central-old*</code> and <code>budget-local*</code>) and all accounting reports, the data dump for month N will contain data describing what was reported at month M. The <code>period_vykaz</code> column will contain only one unique value. (For budget data, the <code>budget_adopted</code> column does not change throughout the year, but the others do. The <code>budget_spending</code> column contains spending up to month M.) To see time series of spending throughout a year, you need to download multiple datasets (with <code>sp_get_table()</code>). To get a full-year’s spending, run <code>sp_get_table(&quot;table_id&quot;, year = &quot;YYYY&quot;)</code> to get the 12th month.</p>
+<p>In the newer central budget reports, <code>budget-central</code> (dataset <code>misris</code>) and <code>budget-state-funds</code> (dataset <code>finsf</code>), data for month M will contain separate rows for spending <em>in</em> (not <em>up to</em>) each month of the year up to month M. To get cumulative spending up to month M in year Y, you need to only download the dataset for month M and then sum the rows in that table. To get a full-year’s spending, run <code>sp_get_table(&quot;table_id&quot;, year = &quot;YYYY&quot;)</code> to get the 12th month’s release, containing data for all months, <em>then sum the values</em> across the months contained in the resulting data frame.</p>
 </div>
 </div>
 <div id="types-of-data" class="section level3">
@@ -240,12 +301,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </ul>
 <p><strong>Codelists</strong> are generally long lists of metadata items. These allow you to “translate” codes contained in return data. Codes identify individual lines, telling you which categories the value in that line belongs to, often across multiple categorisations (see <a href="#working-with-budget-data">Working with budget data</a>.)</p>
 <div id="codelists-and-time-periods" class="section level5 bs-callout bs-callout-orange">
-<h5>Codelists and time periods</h5>
+<h5 class="bs-callout bs-callout-orange">Codelists and time periods</h5>
 <p>One thing to bear in mind is that codelist data contains all items in that codelist, regardless of the time periods for which the item is applicable. That means that for a given code ID in a codelist, there may be duplicates distinguishable only by their validity range.</p>
 <p>The <code>sp_add_codelist()</code> function tries to take care of this for you, but may not success if there are oddities in the data, e.g. one code with two items valid for the same date. In that case you get an informative error message; you should then resolve the duplicates manually using data returned by <code>sp_get_codelist()</code> and supply the edited data to <code>sp_add_codelist()</code> as an object.</p>
 </div>
 <div id="primary-and-secondary-codelists" class="section level5 bs-callout bs-callout-orange">
-<h5>Primary and secondary codelists</h5>
+<h5 class="bs-callout bs-callout-orange">Primary and secondary codelists</h5>
 <p>Note also that there are two kinds of codelists: some can be joined to core data, others are joined to another codelist, in effect decoding some items in that codelist. Currently the package cannot handle the latter type automatically, so you need to save the output of <code>sp_get_codelist()</code> into an object and joit it yourself using <code>dplyr</code>.</p>
 <p>You can see the list of available codelists at <a href="https://monitor.statnipokladna.cz/datovy-katalog/ciselniky" class="uri">https://monitor.statnipokladna.cz/datovy-katalog/ciselniky</a> and in <code>sp_codelists</code>. When I refer to codelists below, I use the ID which you can supply as the <code>&quot;codelist_id&quot;</code> parameter to <code>sp_add_codelist()</code>.</p>
 <p>The codelist that you will generally want for comparing organisations is called “ucjed”; this contains metadata on all organisations covered by the data. It is huge so you will want to store it somewhere after you have retrieved (and processed and filtered if relevant.)</p>
@@ -264,14 +325,14 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>All CSV files contain some common columns, notably those identifying the organisation, its geography, and its place in the public sector. Note that the geography is derived from the seat of the organisation, not the location of the spending.</p>
 <p>You can see the list of datasets (ZIP files) which <code>statnipokladna</code> can process in the <code>sp_datasets</code> data frame.</p>
 <div id="central-budgets-and-codelists" class="section level5 bs-callout bs-callout-orange">
-<h5>Central budgets and codelists</h5>
+<h5 class="bs-callout bs-callout-orange">Central budgets and codelists</h5>
 <p>The more recent central budgets stored in the <code>budget-central</code> table (<code>misris</code> dataset) require a different codelist for sectoral (“paragraf”) breakdown. Use the <code>paragraf_long</code> codelist, not <code>paragraf</code>. If you use <code>paragraf</code>, <code>sp_add_codelist()</code> will technically work but the joined columns will be empty.</p>
 </div>
 </div>
 <div id="coverage" class="section level3">
 <h3>Coverage</h3>
 <p>Put simply, the data covers organisations which report into the SP system, which broadly means all public organisations (I am sure there is a legal definition and I am sure there are exceptions, but I do not know the detail.) There are codelists “druhuj” (organisation type) and “poddruhuj” (subtype) which let you see what type an organisation belongs to, and “forma” will let you know about its legal form.</p>
-<p>This means the data covers both state (I call them “central” in <code>sp_tables</code>) and local organisations incl. all 6000+ municipalities; and both public organisations themselves and their related organisations (both “podřízené” and “příspěvkové”, i.e. subsidiary and contributory, the latter being more independent). Commercial entities owned by public organisations are included at least as codelists items and presumably at least their accounting returns will be included in the data, but I have not researched whether there are cut-offs as to what stake counts as ownership etc.</p>
+<p>This means the data covers both state (I call them “central” in <code>sp_tables</code>) and local organisations incl. all 6000+ municipalities; and both public organisations themselves and their related organisations (both “podřízené” and “příspěvkové”, i.e. subsidiary and sponsored, the latter being more independent). Commercial entities owned by public organisations are included at least as codelists items and presumably at least their accounting returns will be included in the data, but I have not researched whether there are cut-offs as to what stake counts as ownership etc.</p>
 <p>State enterprises (a special legal form) are included. And Budvar, the Czech state brewery which also has a special legal form (national company) also makes an appearance in the codelist… NB: I am not sure which return data, if any, they are included in.</p>
 <p>State funds - a special kind of non-commercial public organisation which disburses money for specific purposes, such as transport infrastructure, are included.</p>
 <p>One special distinction to note is Chapters (kapitola) and OSS (organizační složky státu). Chapters are top-level budget lines, typically managed by a ministry but including many organisations. OSS are quasi-organisations, some are ministries, some not, and some of which manage chapters.</p>
@@ -282,6 +343,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>Generally:</p>
 <ul>
 <li>budget data is published quarterly for local organisations and until 2018 for central organisations; starting from 2018 central organisations budgetary data are published monthly.</li>
+<li>starting from 2020 local (municipal) budget data is published monthly</li>
 <li>accounting data is published quarterly; for some organisations such as city districts this only happens annually at year end.</li>
 </ul>
 <p>See the list of currently available data releases at <a href="https://monitor.statnipokladna.cz/datovy-katalog/transakcni-data" class="uri">https://monitor.statnipokladna.cz/datovy-katalog/transakcni-data</a>.</p>

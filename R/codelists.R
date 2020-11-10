@@ -30,6 +30,7 @@ sp_codelists <- tibble::tribble(~id, ~name,
                                 "polozka", "Rozpo\\u010dtov\\u00e1 polo\\u017eka",
                                 "polvkk", "Z\\u00e1vazn\\u00e9 ukazatele st\\u00e1tn\\u00edho rozpo\\u010dtu (Do 2014)",
                                 "psuk", "Z\\u00e1vazn\\u00e9 ukazatele st\\u00e1tn\\u00edho rozpo\\u010dtu (Od 2015)",
+                                "pvs", "P\\u0159\\u00edjmov\\u00e1 a v\\u00fddajov\\u00e1 struktura: strukturn\\u00ed t\\u0159\\u00edd\\u011bn\\u00ed",
                                 "uctosnova", "Sm\\u011brn\\u00e1 \\u00fa\\u010dtov\\u00e1 osnova (polo\\u017eky \\u00fa\\u010detn\\u00edch v\\u00fdkaz\\u016f)",
                                 "typfinmista", "Typ finan\\u010dn\\u00edho m\\u00edst",
                                 "typorg", "Typ OSS",
@@ -65,10 +66,11 @@ sp_codelists <- tibble::tribble(~id, ~name,
 #'
 #' @param codelist_id A codelist ID. See `id` column in `sp_codelists` for a list of available codelists.
 #' @param n Number of rows to return. Default (NULL) means all. Useful for quickly inspecting a codelist.
-#' @param dest_dir character. Directory in which downloaded files will be stored. Defaults to `tempdir()`.
+#' @param dest_dir character. Directory in which downloaded files will be stored.
+#' If left unset, will use the `statnipokladna.dest_dir` option if the option is set, and `tempdir()` otherwise. Will be created if it does not exist.
 #' @param redownload Redownload even if file has already been downloaded? Defaults to FALSE.
 #'
-#' @return A tibble
+#' @return a [tibble][tibble::tibble-package]
 #' @examples
 #' \donttest{
 #' sp_get_codelist("paragraf")
@@ -76,8 +78,12 @@ sp_codelists <- tibble::tribble(~id, ~name,
 #' @export
 #' @family Core workflow
 
-sp_get_codelist <- function(codelist_id, n = NULL, dest_dir = tempdir(), redownload = FALSE) {
-  td <- paste0(dest_dir, "/statnipokladna/")
+sp_get_codelist <- function(codelist_id, n = NULL, dest_dir = NULL, redownload = FALSE) {
+
+  if(is.null(dest_dir)) dest_dir <- getOption("statnipokladna.dest_dir",
+                                              default = tempdir())
+
+  td <- dest_dir
   dir.create(td, showWarnings = FALSE, recursive = TRUE)
   tf <- paste0(td, codelist_id, ".xml")
   if(file.exists(tf) & !redownload) {
@@ -94,12 +100,22 @@ sp_get_codelist <- function(codelist_id, n = NULL, dest_dir = tempdir(), redownl
   xml_children_all <- xml_all %>% xml2::xml_children()
   xml_children <- if(is.null(n)) xml_children_all else xml_children_all[1:n]
   nms <- xml2::xml_child(xml_all) %>% xml2::xml_children() %>% xml2::xml_name()
-  xvals <- purrr::map_df(xml_children, function(x) {x %>% xml2::xml_children() %>%
+
+  process_codelist <- function(x) {x %>% xml2::xml_children() %>%
       xml2::xml_text() %>%
       # as.character() %>%
-      t() %>% tibble::as_tibble()}) %>%
+      t() %>%
+      # purrr::set_names(nms) %>%
+      as.data.frame() %>%
+      tibble::as_tibble(.name_repair = "minimal")}
+
+  xvals_raw <- purrr::map_df(xml_children, process_codelist)
+
+  # print(xvals_raw)
+
+  xvals <- xvals_raw %>%
     purrr::set_names(nms) %>%
-    dplyr::mutate_at(dplyr::vars(dplyr::ends_with("_date")), lubridate::dmy) %>%
+    dplyr::mutate_at(dplyr::vars(dplyr::ends_with("_date")), readr::parse_date) %>%
     dplyr::mutate_at(dplyr::vars(dplyr::starts_with("kon_")), as.logical) %>%
     dplyr::mutate_at(dplyr::vars(dplyr::matches("^vtab$")),
                      ~stringr::str_pad(., 6, "left", "0")) %>%
@@ -112,16 +128,17 @@ sp_get_codelist <- function(codelist_id, n = NULL, dest_dir = tempdir(), redownl
 
 #' Deprecated: Get codelist
 #'
-#' Deprecated: use `sp_get_codelist()`
+#' Deprecated: use `sp_get_codelist()`\cr\cr
+#' \lifecycle{deprecated}
 #'
 #' @inheritParams sp_get_codelist
 #'
-#' @return A tibble
+#' @return A [tibble][tibble::tibble-package]
 #' @export
 #' @family Core workflow
 
-get_codelist <- function(codelist_id, n = NULL, dest_dir = tempdir(), redownload = FALSE) {
-  lifecycle::deprecate_soft("0.5.2", "statnipokladna::get_codelist()", "sp_get_codelist()")
+get_codelist <- function(codelist_id, n = NULL, dest_dir = NULL, redownload = FALSE) {
+  lifecycle::deprecate_warn("0.5.2", "statnipokladna::get_codelist()", "sp_get_codelist()")
   sp_get_codelist(codelist_id = codelist_id, n = n, dest_dir = dest_dir, redownload = redownload)
 }
 
@@ -184,10 +201,11 @@ switch_minus <- function(string) {
 #' @param data a data frame returned by `sp_get_table()`.
 #' @param codelist The codelist to add. Either a character vector of length one (see `sp_tables` for possible values), or a data frame returned by `sp_get_codelist()`.
 #' @param by character. Columns by which to join the codelist. Same form as for `dplyr::left_join()``.`.
-#' @param dest_dir character. Directory in which downloaded files will be stored. Defaults to `tempdir()`.
+#' @param dest_dir character. Directory in which downloaded files will be stored.
+#' If left unset, will use the `statnipokladna.dest_dir` option if the option is set, and `tempdir()` otherwise. Will be created if it does not exist.
 #' @param period_column Unquoted column name of column identifying the data period in `data`. Leave to default if you have not changed the `data` object returned by `sp_get_table()`.
 #' @param redownload Redownload even if file has already been downloaded? Defaults to FALSE.
-#' @return A data frame of same length as `data`, with added columns from `codelist`. See Details.
+#' @return A [tibble][tibble::tibble-package] of same length as `data`, with added columns from `codelist`. See Details.
 #' @family Core workflow
 #' @export
 #' @examples
@@ -206,7 +224,7 @@ switch_minus <- function(string) {
 sp_add_codelist <- function(data, codelist = NULL, period_column = .data$period_vykaz,
                             by = NULL,
                             redownload = FALSE,
-                            dest_dir = tempdir()) {
+                            dest_dir = NULL) {
   if(is.null(codelist)) stop("Please supply a codelist")
   # print(rlang::as_label({{period_column}}))
   stopifnot("data.frame" %in% class(data),
@@ -217,7 +235,7 @@ sp_add_codelist <- function(data, codelist = NULL, period_column = .data$period_
 
   if(is.character(codelist)) {
     cl_data <- sp_get_codelist(codelist, redownload = redownload,
-                            dest_dir = dest_dir)
+                               dest_dir = dest_dir)
     codelist_name <- codelist
   } else {
     cl_data <- codelist
@@ -233,7 +251,7 @@ sp_add_codelist <- function(data, codelist = NULL, period_column = .data$period_
                                               "Are you sure you are merging the right codelist onto the right data?",
                                               "Set {usethis::ui_field('by')} if needed."))}
 
-    slepit <- function(.x, .y) {
+  slepit <- function(.x, .y) {
     # print(.x)
     # print(.y)
     nrows_start <- nrow(.x)
@@ -248,9 +266,9 @@ sp_add_codelist <- function(data, codelist = NULL, period_column = .data$period_
     slp <- suppressMessages(dplyr::left_join(.x, codelist_filtered, by = by))
     if(nrow(slp) != nrows_start) {
       usethis::ui_stop(c("Something went wrong with matching the codelist to the data for period {this_period}.",
-        "Please inspect the dates on the codelist to make sure there are no duplicate items valid for one given date.",
-        "You may want to filter/edit the codelist manually and pass it to the add_codelist function as an object."))
-      }
+                         "Please inspect the dates on the codelist to make sure there are no duplicate items valid for one given date.",
+                         "You may want to filter/edit the codelist manually and pass it to the add_codelist function as an object."))
+    }
     return(slp)
   }
 
@@ -258,11 +276,11 @@ sp_add_codelist <- function(data, codelist = NULL, period_column = .data$period_
     slepeno <- data %>%
       dplyr::ungroup() %>%
       dplyr::group_by({{period_column}}) %>%
-      dplyr::group_map(slepit, keep = TRUE) %>%
+      dplyr::group_map(slepit, .keep = TRUE) %>%
       dplyr::bind_rows()
   } else {
     slepeno <- suppressMessages(data %>%
-      dplyr::left_join(cl_data, by = by))
+                                  dplyr::left_join(cl_data, by = by))
   }
   return(slepeno)
 }
@@ -276,7 +294,7 @@ get_codelist_url <- function(codelist_id, check_if_exists = TRUE) {
   usethis::ui_info("Building URL for codelist {usethis::ui_value(codelist_id)} - {usethis::ui_value(codelist_name)}")
   x <- stringr::str_glue("{sp_base_url}/data/xml/{codelist_id}.xml")
   if(check_if_exists) {
-    iserror <- httr::http_error(x)
+    iserror <- httr::http_error(x, httr::user_agent(usr))
     if(iserror) usethis::ui_stop("Codelist XML for a codelist with this ID does not exist")
   }
   return(x)
@@ -284,19 +302,18 @@ get_codelist_url <- function(codelist_id, check_if_exists = TRUE) {
 
 #' Deprecated: Add codelist data to downloaded data
 #'
-#' Deprecated, use `sp_add_codelist()` instead.
-#'
-#' \lifecycle{soft-deprecated}
+#' Deprecated, use `sp_add_codelist()` instead.\cr\cr
+#' \lifecycle{deprecated}
 #'
 #' @inheritParams sp_add_codelist
 #'
-#' @return A data frame of same length as `data`, with added columns from `codelist`. See Details.
+#' @return A [tibble][tibble::tibble-package] of same length as `data`, with added columns from `codelist`. See Details.
 #' @family Core workflow
 #' @export
 add_codelist <- function(data, codelist = NULL, period_column = .data$period_vykaz,
-                            redownload = FALSE,
-                            dest_dir = tempdir()) {
-  lifecycle::deprecate_soft("0.5.2", "statnipokladna::add_codelist()", "sp_add_codelist()")
+                         redownload = FALSE,
+                         dest_dir = NULL) {
+  lifecycle::deprecate_warn("0.5.2", "statnipokladna::add_codelist()", "sp_add_codelist()")
   sp_add_codelist(data = data, codelist = codelist, period_column = period_column,
                   redownload = redownload, dest_dir = dest_dir)
 }

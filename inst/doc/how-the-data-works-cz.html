@@ -14,6 +14,67 @@
 
 <title>Jak fungují open data státní pokladny</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 
@@ -216,7 +277,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <blockquote>
-<p>Note: for a basic English-language intro to the package, see the <a href="https://petrbouchal.github.io/statnipokladna/index.html">index page</a> (basic usage) and the <a href="statnipokladna.html">Get started vignette</a> (background on the underlying data).</p>
+<p>Note: for a basic English-language intro to the package, see the <a href="https://petrbouchal.xyz/statnipokladna/index.html">index page</a> (basic usage) and the <a href="statnipokladna.html">Get started vignette</a> (background on the underlying data).</p>
 </blockquote>
 <blockquote>
 <p>Poznámka: seznam vysledovaných problémů se zdrojovými daty jsem vyčlenil do <a href="data-issues-cz.html">zvláštního dokumentu</a></p>
@@ -241,7 +302,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li>při ověřování může taky pomoct např.
 <ul>
 <li>příloha vyhlášky o RUD (<a href="https://www.mfcr.cz/cs/legislativa/legislativni-dokumenty/2019/vyhlaska-c-219-2019-sb-36077">2019</a>)</li>
-<li>státní závěrečné účty nejlépe z <a href="http://www.psp.cz/sqw/tisky.sqw?o=8&amp;F=H&amp;PT=U&amp;dx=1&amp;na=N%E1vrh+st%E1tn%EDho+z%E1v%ECre%E8n%E9ho+%FA%E8tu+%C8R&amp;t=&amp;za=&amp;f_N=on&amp;f_S=on&amp;f_R=on&amp;f_I=on&amp;f_Z=on&amp;f_V=on&amp;f_U=on&amp;f_P=on&amp;f_O=on&amp;ra=20">webu sněmovny</a></li>
+<li>státní závěrečné účty nejlépe z <a href="https://www.psp.cz/sqw/tisky.sqw">webu sněmovny</a> (hledání “státního závěrečného účtu”)</li>
 <li>údaje o výběru daní od Finanční správy: (<a href="https://www.financnisprava.cz/cs/dane/kraje-a-obce/danove-prijmy-kraju-a-obci/prubeh-celostatniho-inkasa-sdilenych-dani-3735">tabulky</a>, <a href="https://www.financnisprava.cz/cs/dane/analyzy-a-statistiky/udaje-z-vyberu-dani">statistiky</a>)</li>
 </ul></li>
 </ul>

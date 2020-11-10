@@ -1,7 +1,7 @@
 sp_tables_i <- tibble::tribble(~table_num, ~report_num, ~id,   ~table_code,   ~dataset_id, ~file_regex, ~czech_name, ~note,
                                100,         51,         "budget-local", "finm_budget", "finm",      "FINM201",    "Pln\\u011bn\\u00ed rozpo\\u010dtu m\\u00edstn\\u011b \\u0159\\u00edzen\\u00fdch organizac\\u00ed" , NA,
                                100,         51,         "budget-local-purpose-grants", "finm_ucel",   "finm",      "FINM207",    "\\u00da\\u010delov\\u00e9 financov\\u00e1n\\u00ed m\\u00edstn\\u011b \\u0159\\u00edzen\\u00fdch organizac\\u00ed", NA,
-                               0,           0,          "budget-indicators",     "misris_zu",   "misris",    "MIS-RIS-ZU", "Z\\u00e1vazn\\u00e9 ukazatele st\\u00e1tn\\u00edho rozpo\\u010dtu", "only central orgs",
+                               0,           0,          "budget-indicators",     "misris_zu",   "misris",    "((MIS-RIS-ZU)|(ZU-MIS-RIS))", "Z\\u00e1vazn\\u00e9 ukazatele st\\u00e1tn\\u00edho rozpo\\u010dtu", "only central orgs",
                                0,           0,          "profit-and-loss",     "vykzz",       "vykzz",     "VYKZZ",      "V\\u00fdkaz zisk\\u016f a ztr\\u00e1t" , NA,
                                0,           0,          "profit-and-loss-city-districts",     "vykzzmc",       "vykzz",     "VYKZZMC",      "V\\u00fdkaz zisk\\u016f a ztr\\u00e1t - m\\u011bstsk\\u00e9 \\u010d\\u00e1sti", "only for 2018; in other years city districts are incorporated in balance sheet",
                                0,           0,          "changes-in-equity",  "pozvk", "pozvk", "POZVK", "P\\u0159ehled o zm\\u011bn\\u00e1ch vlastn\\u00edho kapit\\u00e1lu", NA,
@@ -13,7 +13,7 @@ sp_tables_i <- tibble::tribble(~table_num, ~report_num, ~id,   ~table_code,   ~d
                                0,           0,          "budget-central-old",     "finu_budget",  "finu",      "FINU101",    "Pln\\u011bn\\u00ed rozpo\\u010dtu \\u00fast\\u0159edn\\u011b \\u0159\\u00edzen\\u00fdch organizac\\u00ed do 2014", "pre-2015 only",
                                0,           0,          "budget-central-old-purpose-grants",     "finu_ucel",  "finu",      "FINU107",   "\\u00da\\u010delov\\u00e9 financov\\u00e1n\\u00ed - poskytnut\\u00e9 prost\\u0159edky", "pre-2015 only",
                                0,           0,          "budget-central-old-subsidies",     "finu_dotace",  "finu",      "FINU108",    "Dota\\u010dn\\u00ed financov\\u00e1n\\u00ed - poskytnut\\u00e9 prost\\u0159edky", "pre-2015 only",
-                               0,           0,          "budget-central",     "misris",      "misris",    "MIS-RIS",    "Pln\\u011bn\\u00ed rozpo\\u010dtu \\u00fast\\u0159edn\\u011b \\u0159\\u00edzen\\u00fdch organizac\\u00ed od 2015", "post-2015 only") %>%
+                               0,           0,          "budget-central",     "misris",      "misris",    "/MIS-RIS",    "Pln\\u011bn\\u00ed rozpo\\u010dtu \\u00fast\\u0159edn\\u011b \\u0159\\u00edzen\\u00fdch organizac\\u00ed od 2015", "post-2015 only") %>%
   dplyr::mutate_if(is.double, as.integer) %>%
   dplyr::arrange(.data$id)
 # stringi::stri_escape_unicode("xxx")
@@ -90,6 +90,7 @@ sp_tables_i <- tibble::tribble(~table_num, ~report_num, ~id,   ~table_code,   ~d
 #'  | Original | Output | English | Czech | Note |
 #'  | --- | --- | --- | --- | --- |
 #'  | ZC_POLVYK | polvyk | item/line  | položka výkazu  | -  |
+#'  | ZC_SYNUC | synuc | synthetic account  | syntetický účet  | -  |
 #'  | ZU_MONET | previous_net | net, previous period  | netto minulé období | - |
 #'  | ZU_AOBTTO | current_gross | gross, current period   | brutto běžné období   | - |
 #'  | ZU_AONET | current_net | net, current period  | netto běžné období  | - |
@@ -125,24 +126,25 @@ sp_tables_i <- tibble::tribble(~table_num, ~report_num, ~id,   ~table_code,   ~d
 #' Can be a vector of length > 1 (see Details for how to work with data across time periods.).
 #' @param month month, numeric. Must be 3, 6, 9 or 12. Can be a vector of length > 1 (see details).
 #' @param ico ID(s) of org to return, character of length one or more. If unset, returns all orgs. ID not checked for correctness/existence. See <http://monitor.statnipokladna.cz/datovy-katalog/prohlizec-ciselniku/ucjed> to look up ID of any org in the dataset.
-#' @param dest_dir character. Directory in which downloaded files will be stored. Defaults to `tempdir()`. Will be created if it does not exist.
+#' @param dest_dir character. Directory in which downloaded files will be stored.
+#' If left unset, will use the `statnipokladna.dest_dir` option if the option is set, and `tempdir()` otherwise. Will be created if it does not exist.
 #' @param redownload Redownload even if recent file present? Defaults to FALSE.
 #'
-#' @return a tibble; see Details for key to the columns
+#' @return a [tibble][tibble::tibble-package]; see Details for key to the columns
 #' @encoding UTF-8
 #' @examples
 #' \donttest{
-#' allorgs_latest <- sp_get_table("budget-local")
-#' allorgs_2018 <- sp_get_table("budget-local", 2018)
-#' allorgs_mid2018 <- sp_get_table("budget-local", 2018, 6)
-#' oneorg_multiyear <- sp_get_table("budget-local", 2012:2018, 12, ico = "00064581")
-#' oneorg_multihalfyears <- sp_get_table("budget-local", 2013:2018, c(6, 12), ico = "00064581")
+#' allorgs_latest <- sp_get_table("budget-central")
+#' allorgs_2018 <- sp_get_table("budget-central", 2018)
+#' allorgs_mid2018 <- sp_get_table("budget-central", 2018, 6)
+#' oneorg_multiyear <- sp_get_table("budget-central", 2017:2018, 12, ico = "00064581")
+#' oneorg_multihalfyears <- sp_get_table("budget-central", 2017:2018, c(6, 12), ico = "00064581")
 #' }
 #' @export
 #' @family Core workflow
 #'
 sp_get_table <- function(table_id, year = 2018, month = 12, ico = NULL,
-                      redownload = FALSE, dest_dir = tempdir()) {
+                      redownload = FALSE, dest_dir = NULL) {
   stopifnot(is.character(ico) | is.null(ico))
   if(interactive() == FALSE & (missing(year) | missing(month))) {
     usethis::ui_warn("Either {usethis::ui_field('year')} or {usethis::ui_field('month')} not set.
@@ -151,6 +153,10 @@ sp_get_table <- function(table_id, year = 2018, month = 12, ico = NULL,
                      to provide access to the latest data by default.")
 
   }
+
+  if(is.null(dest_dir)) dest_dir <- getOption("statnipokladna.dest_dir",
+                                              default = tempdir())
+
   if(!(table_id %in% sp_tables_i$id)) usethis::ui_stop("Not a valid table id. Consult {usethis::ui_code('sp_tables')}.")
   dataset_id <- sp_tables_i$dataset_id[sp_tables_i$id == table_id]
   table_regex <- paste0(sp_tables_i$file_regex[sp_tables_i$id == table_id])
@@ -208,6 +214,7 @@ sp_get_table <- function(table_id, year = 2018, month = 12, ico = NULL,
                         ZU_ZVYS = "increase",
                         ZU_SNIZ = "decrease",
                         ZU_BEZUO = "current",
+                        ZU_SYNUC = "synuc",
                         `0FUNC_AREA` = "paragraf")
     return(dt)
   }
@@ -221,17 +228,16 @@ sp_get_table <- function(table_id, year = 2018, month = 12, ico = NULL,
 # onyr <- c(2018) %>% purrr::map_dfr(~ sp_get_table(2, year = ., month = 12))
 # onyr <- c(2018) %>% purrr::map_dfr(~ sp_get_table(1, year = ., month = 12))
 
-#' Deprecated: Get a statnipokladna table
-#'
+#' Deprecated: Get a statnipokladna table\cr\cr
 #' Deprecated, use `sp_get_table()` instead.
 #'
-#' \lifecycle{soft-deprecated}
+#' \lifecycle{deprecated}
 #'
 #' @inheritParams sp_get_table
 #'
-#' @return a tibble
+#' @return a [tibble][tibble::tibble-package]
 #' @export
 get_table <- function(table_id, year = 2018, month = 12, ico = NULL,
-                      redownload = FALSE, dest_dir = tempdir()) {
-  lifecycle::deprecate_soft("0.5.2", "statnipokladna::get_table()", "sp_get_table()")
+                      redownload = FALSE, dest_dir = NULL) {
+  lifecycle::deprecate_warn("0.5.2", "statnipokladna::get_table()", "sp_get_table()")
 }

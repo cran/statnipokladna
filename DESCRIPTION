@@ -1,6 +1,6 @@
 Package: statnipokladna
 Title: Use Data from the Czech Public Finance Database
-Version: 0.5.7
+Version: 0.6.0
 Authors@R: 
     person(given = "Petr",
            family = "Bouchal",
@@ -25,10 +25,10 @@ RdMacros: lifecycle
 Encoding: UTF-8
 Language: en
 LazyData: true
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 NeedsCompilation: no
-Packaged: 2020-04-11 21:54:50 UTC; petr
+Packaged: 2020-11-10 01:49:54 UTC; petr
 Author: Petr Bouchal [aut, cre] (<https://orcid.org/0000-0002-0471-716X>)
 Maintainer: Petr Bouchal <pbouchal@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-04-12 05:30:02 UTC
+Date/Publication: 2020-11-10 05:40:02 UTC

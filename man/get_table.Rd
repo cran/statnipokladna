@@ -2,7 +2,8 @@
 % Please edit documentation in R/tables.R
 \name{get_table}
 \alias{get_table}
-\title{Deprecated: Get a statnipokladna table}
+\title{Deprecated: Get a statnipokladna table\cr\cr
+Deprecated, use \code{sp_get_table()} instead.}
 \usage{
 get_table(
   table_id,
@@ -10,7 +11,7 @@ get_table(
   month = 12,
   ico = NULL,
   redownload = FALSE,
-  dest_dir = tempdir()
+  dest_dir = NULL
 )
 }
 \arguments{
@@ -25,14 +26,12 @@ Can be a vector of length > 1 (see Details for how to work with data across time
 
 \item{redownload}{Redownload even if recent file present? Defaults to FALSE.}
 
-\item{dest_dir}{character. Directory in which downloaded files will be stored. Defaults to \code{tempdir()}. Will be created if it does not exist.}
+\item{dest_dir}{character. Directory in which downloaded files will be stored.
+If left unset, will use the \code{statnipokladna.dest_dir} option if the option is set, and \code{tempdir()} otherwise. Will be created if it does not exist.}
 }
 \value{
-a tibble
+a \link[tibble:tibble-package]{tibble}
 }
 \description{
-Deprecated, use \code{sp_get_table()} instead.
-}
-\details{
-\lifecycle{soft-deprecated}
+\lifecycle{deprecated}
 }

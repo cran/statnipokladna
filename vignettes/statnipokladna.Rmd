@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-> Note for Czech speakers: a previous note covering similar information, sometimes in more depth, is available in Czech [the Czech guide to the data](how-the-data-works-cz.html).
+> Note for Czech speakers: a previous note covering similar information, sometimes in more depth, is available in [the Czech guide to the data](how-the-data-works-cz.html).
 
 This vignette provides background on the data that `statnipokladna` provides access to. Make sure you read the relevant parts before analysing the data: it can be quite complicated and it is easy to make mistakes and end up with wrong numbers.
 
@@ -30,9 +30,9 @@ Several datasets are not published in open data but are available in the [analyt
 
 How data for different time periods is exported differs by dataset. This has significant implications for how you get to usable full-year numbers or time series in different tables.
 
-For budget datasets `finm` and `finu` (tables `budget-central-old*` and `budget-local*`) and all accounting reports, the data dump for month N will contain data describing what was reported at month M. The `period_vykaz` column will contain only one unique value. (For budget data, the `budget_adopted` column does not change throughout the year, but the others do. The `budget_spending` column contains spending up to month M.) To see time series of spending throughout a year, you need to download multiple datasets (which `sp_get_table`). To get a full-year's spending, run `sp_get_table("table_id", year = "YYYY")` to get the 12th month.
+For budget datasets `finm` and `finu` (tables `budget-central-old*` and `budget-local*`) and all accounting reports, the data dump for month N will contain data describing what was reported at month M. The `period_vykaz` column will contain only one unique value. (For budget data, the `budget_adopted` column does not change throughout the year, but the others do. The `budget_spending` column contains spending up to month M.) To see time series of spending throughout a year, you need to download multiple datasets (with `sp_get_table()`). To get a full-year's spending, run `sp_get_table("table_id", year = "YYYY")` to get the 12th month.
 
-In the newer central budget reports, `budget-central` (dataset `misris`) and `budget-state-funds` (dataset `finsf`), data for month M will contain separate rows for spending *in* (not *up to*) each month of the year up to month M. To get cumulative spending up to month M in year Y, you need to only download the dataset for month M and then sum the rows in that table. To get a full-year's spending, run `sp_get_table("table_id", year = "YYYY")` to get the 12th month, *then sum the values* across the months contained in the resulting data frame.
+In the newer central budget reports, `budget-central` (dataset `misris`) and `budget-state-funds` (dataset `finsf`), data for month M will contain separate rows for spending *in* (not *up to*) each month of the year up to month M. To get cumulative spending up to month M in year Y, you need to only download the dataset for month M and then sum the rows in that table. To get a full-year's spending, run `sp_get_table("table_id", year = "YYYY")` to get the 12th month's release, containing data for all months, *then sum the values* across the months contained in the resulting data frame.
 
 ### Types of data
 
@@ -92,7 +92,7 @@ different codelist for sectoral ("paragraf") breakdown. Use the `paragraf_long` 
 
 Put simply, the data covers organisations which report into the SP system, which broadly means all public organisations (I am sure there is a legal definition and I am sure there are exceptions, but I do not know the detail.) There are codelists "druhuj" (organisation type) and "poddruhuj" (subtype) which let you see what type an organisation belongs to, and "forma" will let you know about its legal form.
 
-This means the data covers both state (I call them "central" in `sp_tables`) and local organisations incl. all 6000+ municipalities; and both public organisations themselves and their related organisations (both "podřízené" and "příspěvkové", i.e. subsidiary and contributory, the latter being more independent). Commercial entities owned by public organisations are included at least as codelists items and presumably at least their accounting returns will be included in the data, but I have not researched whether there are cut-offs as to what stake counts as ownership etc. 
+This means the data covers both state (I call them "central" in `sp_tables`) and local organisations incl. all 6000+ municipalities; and both public organisations themselves and their related organisations (both "podřízené" and "příspěvkové", i.e. subsidiary and sponsored, the latter being more independent). Commercial entities owned by public organisations are included at least as codelists items and presumably at least their accounting returns will be included in the data, but I have not researched whether there are cut-offs as to what stake counts as ownership etc. 
 
 State enterprises (a special legal form) are included. And Budvar, the Czech state brewery which also has a special legal form (national company) also makes an appearance in the codelist... NB: I am not sure which return data, if any, they are included in.
 
@@ -106,7 +106,8 @@ Report/return data is published in differing periodicities, depending on the kin
 
 Generally:
 
-- budget data is published quarterly for local organisations and until 2018 for central organisations; starting from 2018 central organisations budgetary data are published monthly.
+- budget data is published quarterly for local organisations and until 2018 for central organisations; starting from 2018 central organisations budgetary data are published monthly. 
+- starting from 2020 local (municipal) budget data is published monthly
 - accounting data is published quarterly; for some organisations such as city districts this only happens annually at year end.
 
 See the list of currently available data releases at https://monitor.statnipokladna.cz/datovy-katalog/transakcni-data.

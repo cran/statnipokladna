@@ -1,4 +1,24 @@
-# statnipokladna (development version)
+# statnipokladna 0.6.0
+
+## Improvements
+
+* directory for downloading raw data and documentation in all `sp_get_*()` functions can now be set in the option `statnipokladna.dest_dir`. Set this at the beginning of your script or once per session, or in your `.Rprofile` (e.g. `setOption(statnipokladna.dest_dir = "~/sp_data")` for cross-session storage or `setOption(statnipokladna.dest_dir = "sp_data")` for storing all data downloaded by statnipokladna in an `sp_data` subfolder of the current project.)
+* downloaded data is no longer nested in a `statnipokladna` directory inside `dest_dir`.
+* minor improvements and updates in vignettes.
+* properly included the tibble package to ensure correct print methods for output tibbles
+* `sp_get_dataset()` and `sp_get_dataset_doc()` now return their outputs invisibly and provide better messages
+
+## Bug fixes
+
+* adapt `sp_get_table()` to a new structure of some data dumps on the part of the data provider
+* `sp_get_codelist()` no longer issues a tibble-related warning
+* `sp_get_codelist()` now parses all dates correctly
+
+## Deprecations
+
+Functions with names not starting with `sp_` are deprecated and emit a warning. Use equivalent functions named `sp_*`.
+
+# statnipokladna 0.5.7
 
 ## Bug fixes
 

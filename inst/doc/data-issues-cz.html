@@ -14,6 +14,67 @@
 
 <title>Známé datové zádrhele</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 
@@ -257,7 +318,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>Co v datech není nebo jsem to nenašel</h2>
 <ul>
 <li>zdrojové třídění u rozpočtů samospráv - jen incidentálně jako součást reportu účelového financování</li>
-<li>údaje o regulaci zaměstnanosti ve veřejném sektoru neboli rozpočtované a skutečné počty zaměstnanců a průměrné platy, ač se sledují a částečně zveřejňují ve státním závěrečném účtu, viz <a href="https://petrbouchal.github.io/urednici2019/">petrbouchal/urednici2019</a></li>
+<li>údaje o regulaci zaměstnanosti ve veřejném sektoru neboli rozpočtované a skutečné počty zaměstnanců a průměrné platy, ač se sledují a částečně zveřejňují ve státním závěrečném účtu, viz <a href="https://petrbouchal.xyz/urednici2019/">petrbouchal/urednici2019</a></li>
 <li>informace o tom, na jakém místě se peníze utratily (pokud vím, plošně se nesleduje, něco je v CEDRu a docela se to ví u eurofondů)</li>
 </ul>
 </div>

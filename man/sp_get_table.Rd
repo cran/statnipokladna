@@ -11,7 +11,7 @@ sp_get_table(
   month = 12,
   ico = NULL,
   redownload = FALSE,
-  dest_dir = tempdir()
+  dest_dir = NULL
 )
 }
 \arguments{
@@ -26,10 +26,11 @@ Can be a vector of length > 1 (see Details for how to work with data across time
 
 \item{redownload}{Redownload even if recent file present? Defaults to FALSE.}
 
-\item{dest_dir}{character. Directory in which downloaded files will be stored. Defaults to \code{tempdir()}. Will be created if it does not exist.}
+\item{dest_dir}{character. Directory in which downloaded files will be stored.
+If left unset, will use the \code{statnipokladna.dest_dir} option if the option is set, and \code{tempdir()} otherwise. Will be created if it does not exist.}
 }
 \value{
-a tibble; see Details for key to the columns
+a \link[tibble:tibble-package]{tibble}; see Details for key to the columns
 }
 \description{
 Cleans and loads a table. If needed, a dataset containing the table is downloaded.
@@ -81,6 +82,7 @@ Data is processed in the following way:
 \strong{Tables \verb{balance-sheet*}}\tabular{lllll}{
    Original \tab Output \tab English \tab Czech \tab Note \cr
    ZC_POLVYK \tab polvyk \tab item/line \tab položka výkazu \tab - \cr
+   ZC_SYNUC \tab synuc \tab synthetic account \tab syntetický účet \tab - \cr
    ZU_MONET \tab previous_net \tab net, previous period \tab netto minulé období \tab - \cr
    ZU_AOBTTO \tab current_gross \tab gross, current period \tab brutto běžné období \tab - \cr
    ZU_AONET \tab current_net \tab net, current period \tab netto běžné období \tab - \cr
@@ -115,11 +117,11 @@ Data is processed in the following way:
 }
 \examples{
 \donttest{
-allorgs_latest <- sp_get_table("budget-local")
-allorgs_2018 <- sp_get_table("budget-local", 2018)
-allorgs_mid2018 <- sp_get_table("budget-local", 2018, 6)
-oneorg_multiyear <- sp_get_table("budget-local", 2012:2018, 12, ico = "00064581")
-oneorg_multihalfyears <- sp_get_table("budget-local", 2013:2018, c(6, 12), ico = "00064581")
+allorgs_latest <- sp_get_table("budget-central")
+allorgs_2018 <- sp_get_table("budget-central", 2018)
+allorgs_mid2018 <- sp_get_table("budget-central", 2018, 6)
+oneorg_multiyear <- sp_get_table("budget-central", 2017:2018, 12, ico = "00064581")
+oneorg_multihalfyears <- sp_get_table("budget-central", 2017:2018, c(6, 12), ico = "00064581")
 }
 }
 \seealso{
