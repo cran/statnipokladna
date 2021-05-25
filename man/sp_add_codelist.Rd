@@ -7,7 +7,7 @@
 sp_add_codelist(
   data,
   codelist = NULL,
-  period_column = .data$period_vykaz,
+  period_column = .data$vykaz_date,
   by = NULL,
   redownload = FALSE,
   dest_dir = NULL
@@ -56,7 +56,7 @@ If a codelist does not join using \code{sp_add_codelis()}, store the output of \
 it manually using \code{dplyr}.
 }
 \examples{
-\donttest{
+\dontrun{
 sp_get_table("budget-central", 2017) \%>\%
   sp_add_codelist("polozka") \%>\%
   sp_add_codelist("paragraf")

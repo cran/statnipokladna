@@ -1,3 +1,40 @@
+# statnipokladna 0.7.0
+
+## BREAKING CHANGES
+
+* `sp_get_dataset()` no longer unzips the downloaded archive. It therefore returns the path to the downloaded zip file, not to the unzipped files. This is needed to support a more modular workflow (see below and `vignette("workflow", package = "statnipokladna")`).
+* The `year` param in `sp_get_table()` and `sp_get_dataset()` now has no default. This is more sensible when there is no easy way to determine the latest available table/dataset and in any case better for reproducibility. The new `sp_get_dataset_url()` also has this updated behaviour.
+* the columns signifying the time period of the result of `sp_get_table()` have been renamed for more clarity and consistency:
+  - `period_vykaz` to `vykaz_date` 
+  - `per_m` to `vykaz_month` 
+  - `per_yr` to `vykaz_year` 
+* `sp_add_codelist()` no longer creates messy column names in the form of `[codelist name]_nazev_nazev`
+
+## New features
+
+* the core functions have been rewritten into a more modular architecture and their constituent modules exported. This allows more fine-grained control over workflows using lower-level functions to accommodate caching and reproducibility e.g. via {targets} or {drake}.
+  * sp_get_[dataset|table|codelist] are now effectively wrappers around several lower-level functions
+  * those previously using these core functions should see no change except for one breaking change in `sp_get_dataset()` (see above).
+  * the lower-level functions enable step-by-step workflows with transparency of intermediate steps (URLs, downloaded ZIP archives, pointers to specific CSV files, etc.) See `vignette("workflow", package = "statnipokladna")`
+
+## Improvements
+
+* better error messages around mismatches between table ID and file in archive
+* more informative errors when online files are not available
+* improve date parsing in `sp_get_codelist()` to handle inconsistent date formats in some codelists
+* faster loading of tables from previously downloaded and unzipped datasets
+* empty strings in codelists are now returned as NA
+* more columns are now properly named in the output so they can be linked to codelists, incl. columns related to programme spend and rifngfenced ('purpose'-marked) spend
+* `rozprog` (programme spend ID) as well as `nastroj` and `nastrojanal` codelists are now recognised
+
+## Bug fixes
+
+* when setting `dest_dir` in `sp_get_*()` functions, files are now put into the right directory even if `dest_dir` does not contain a trailing slash
+* `sp_get_dataset_doc()` now creates `dest_dir` if it does not exist, as advertised in the documentation 
+* upgrade dplyr dependency to aviod mysterious "unused argument" error in codelist functions
+* balance sheets of city districts can now be loaded for all years where they are available
+* examples are now safe to run on CRAN
+
 # statnipokladna 0.6.0
 
 ## Improvements
