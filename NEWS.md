@@ -1,3 +1,17 @@
+# statnipokladna 0.7.2
+
+# statnipokladna 0.7.1
+
+## Minor improvements
+
+* switched messaging to {cli} package, dropping the {usethis} dependency
+* improve naming of output columns (additional column code translated into readable scheme)
+
+## Bug fixes
+
+* fixed a bug in `sp_load_table()` which caused the `vykaz_date` column in its output to be all `NA`
+* loading data on state funds now works, IDs and details are newly listed in `sp_tables`
+
 # statnipokladna 0.7.0
 
 ## BREAKING CHANGES

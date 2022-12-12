@@ -22,7 +22,7 @@ Can be a vector of length > 1 (see Details for how to work with data across time
 
 \item{month}{month, numeric. Must be 3, 6, 9 or 12. Can be a vector of length > 1 (see details).}
 
-\item{ico}{ID(s) of org to return, character of length one or more. If unset, returns all orgs. ID not checked for correctness/existence. See \url{http://monitor.statnipokladna.cz/datovy-katalog/prohlizec-ciselniku/ucjed} to look up ID of any org in the dataset.}
+\item{ico}{ID(s) of org to return, character of length one or more. If unset, returns all orgs. ID not checked for correctness/existence. See \url{https://monitor.statnipokladna.cz/datovy-katalog/prohlizec-ciselniku/ucjed} to look up ID of any org in the dataset.}
 
 \item{redownload}{Redownload even if recent file present? Defaults to FALSE.}
 
@@ -33,5 +33,6 @@ If left unset, will use the \code{statnipokladna.dest_dir} option if the option 
 a \link[tibble:tibble-package]{tibble}
 }
 \description{
-\lifecycle{deprecated}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
+\keyword{internal}

@@ -62,19 +62,18 @@ Please report bugs at
 
 ## What this package enables you to do:
 
--   get cleaned-up, ready to analyse data frames based on open data
-    dumps from the public finance database
-    -   the package draws on the online data and returns a clean data
-        frame
-    -   the resulting data is ready to merge into time series
-    -   time series is built based on user input
--   do this through a consistent API which supplements some of the
-    documentation that is missing from the official endpoints (*still
-    subject to some change*)
--   access registers published alongside the data (e.g. lists of public
-    organisations with their identifiers and metadata), some of which
-    can be useful in other contexts
--   augment the core data with the desired type of register
+- get cleaned-up, ready to analyse data frames based on open data dumps
+  from the public finance database
+  - the package draws on the online data and returns a clean data frame
+  - the resulting data is ready to merge into time series
+  - time series is built based on user input
+- do this through a consistent API which supplements some of the
+  documentation that is missing from the official endpoints (*still
+  subject to some change*)
+- access registers published alongside the data (e.g. lists of public
+  organisations with their identifiers and metadata), some of which can
+  be useful in other contexts
+- augment the core data with the desired type of register
 
 See the [Get
 started](https://petrbouchal.xyz/statnipokladna/articles/statnipokladna.html)
@@ -82,23 +81,23 @@ vignette for background on the underlying data.
 
 See also [Background information](#background-information) below.
 
-## How does this compare to the [official analytical interface](http://monitor.statnipokladna.cz/)?
+## How does this compare to the [official analytical interface](https://monitor.statnipokladna.cz/)?
 
--   no limit on the number of data points
--   no limits on the number of organisations, unlike the official
-    interface which forces you to use a filter on some tables
--   different reports (local gov, central gov…) in one place in
-    consistent form
--   much faster for analysis (the current version of the online
-    interface takes long to render)
--   reproducible!!! While the online interface provides a permanent link
-    to your analysis, this must be copied manually and does not
-    necessarily provide an easily legible overview of how the analysis
-    was produced (filters, columns etc.)
--   no need for the web =&gt; excel =&gt; R dance
--   drawback: for some reports, the data is published in different forms
-    for different time periods (pre- and post-2015)
--   drawback: consolidation must be done manually
+- no limit on the number of data points
+- no limits on the number of organisations, unlike the official
+  interface which forces you to use a filter on some tables
+- different reports (local gov, central gov…) in one place in consistent
+  form
+- much faster for analysis (the current version of the online interface
+  takes long to render)
+- reproducible!!! While the online interface provides a permanent link
+  to your analysis, this must be copied manually and does not
+  necessarily provide an easily legible overview of how the analysis was
+  produced (filters, columns etc.)
+- no need for the web =\> excel =\> R dance
+- drawback: for some reports, the data is published in different forms
+  for different time periods (pre- and post-2015)
+- drawback: consolidation must be done manually
 
 ### Future development
 
@@ -108,10 +107,10 @@ stable and can be used externally. Depending on the result, some
 functionality in this package can be streamlined and some can be added -
 e.g. 
 
--   listing of available releases
--   checking against existing releases and data sets
--   retrieving some previously unpublished data e.g. calculated
-    indicators and budget responsibility monitoring
+- listing of available releases
+- checking against existing releases and data sets
+- retrieving some previously unpublished data e.g. calculated indicators
+  and budget responsibility monitoring
 
 ## Getting started
 
@@ -125,13 +124,8 @@ Get data from a particular part (file) of a dataset (“výkaz”):
 local_budgets <- sp_get_table(table_id = "budget-local", # table ID, see `sp_tables`
                            year = 2019,
                            month = 9)
-#> ℹ Files already in ~/sp_data/finm/2019/09, not downloading. Set `redownload = TRUE` if needed.
-#> ℹ Reading data...
-#> ℹ Transforming data...
-#> Warning: Problem with `mutate()` input `vykaz_date`.
-#> ℹ All formats failed to parse. No formats found.
-#> ℹ Input `vykaz_date` is `(function (..., quiet = FALSE, tz = NULL, locale = Sys.getlocale("LC_TIME"), ...`.
-#> Warning: All formats failed to parse. No formats found.
+#> ✔ Storing downloaded archive in ']8;;file:///var/folders/fr/6f85xds52pq7g55fpmk4z7f80000gn/T//RtmpQjt91Z/finm/2019/09/var/folders/fr/6f85xds52pq7g55fpmk4z7f80000gn/T//RtmpQjt91Z/finm/2019/09]8;;'
+#> • Set `dest_dir` for more control over downloaded files.
 ```
 
 The data is automatically downloaded to a temp directory, so it will be
@@ -145,15 +139,15 @@ It is a rather raw-looking data frame…
 
 ``` r
 head(local_budgets)
-#> # A tibble: 6 x 15
-#>   vykaz vtab  vykaz_year vykaz_month ucjed ico   kraj  nuts  polozka_typ
-#>   <chr> <chr> <chr>      <chr>       <chr> <chr> <chr> <chr> <chr>      
-#> 1 051   0002… 2019       09          1000… 7508… CZ03  CZ03  3          
-#> 2 051   0002… 2019       09          1000… 7508… CZ03  CZ03  3          
-#> 3 051   0001… 2019       09          1000… 0006… CZ010 CZ01… 2          
-#> 4 051   0001… 2019       09          1000… 0006… CZ010 CZ01… 2          
-#> 5 051   0001… 2019       09          1000… 0006… CZ010 CZ01… 2          
-#> 6 051   0001… 2019       09          1000… 0006… CZ010 CZ01… 2          
+#> # A tibble: 6 × 15
+#>   vykaz vtab   vykaz_year vykaz_month ucjed      ico     kraj  nuts  polozka_typ
+#>   <chr> <chr>  <chr>      <chr>       <chr>      <chr>   <chr> <chr> <chr>      
+#> 1 051   000200 2019       09          1000003163 750869… CZ03  CZ03  3          
+#> 2 051   000200 2019       09          1000003163 750869… CZ03  CZ03  3          
+#> 3 051   000100 2019       09          1000017768 000645… CZ010 CZ01… 2          
+#> 4 051   000100 2019       09          1000017768 000645… CZ010 CZ01… 2          
+#> 5 051   000100 2019       09          1000017768 000645… CZ010 CZ01… 2          
+#> 6 051   000100 2019       09          1000017768 000645… CZ010 CZ01… 2          
 #> # … with 6 more variables: paragraf <chr>, polozka <chr>, budget_adopted <dbl>,
 #> #   budget_amended <dbl>, budget_spending <dbl>, vykaz_date <date>
 ```
@@ -163,26 +157,26 @@ codelists:
 
 ``` r
 functional_categories <- sp_get_codelist("paragraf")
-#> ℹ Codelist file already in '~/sp_data/', not downloading. Set `redownload = TRUE` if needed.
-#> ℹ Processing codelist data
+#> ℹ Storing codelist in ']8;;file:///var/folders/fr/6f85xds52pq7g55fpmk4z7f80000gn/T//RtmpQjt91Z/var/folders/fr/6f85xds52pq7g55fpmk4z7f80000gn/T//RtmpQjt91Z]8;;'
+#> ℹ Set `dest_dir` for more control over downloaded files.
 ```
 
 ``` r
 functional_categories
-#> # A tibble: 570 x 8
-#>    paragraf start_date end_date   nazev    skupina   oddil  pododdil   poznamka 
-#>    <chr>    <date>     <date>     <chr>    <chr>     <chr>  <chr>      <chr>    
-#>  1 0000     2010-01-01 9999-12-31 Pro pří… Příjmy    Příjmy Příjmy     Pro příj…
-#>  2 1011     2010-01-01 9999-12-31 Udržová… Zeměděls… Zeměd… Zemědělsk… Zeměděls…
-#>  3 1012     2010-01-01 9999-12-31 Podniká… Zeměděls… Zeměd… Zemědělsk… Podnikán…
-#>  4 1013     2010-01-01 9999-12-31 Genetic… Zeměděls… Zeměd… Zemědělsk… Genetick…
-#>  5 1014     2010-01-01 9999-12-31 Ozdravo… Zeměděls… Zeměd… Zemědělsk… Ozdrav.h…
-#>  6 1019     2010-01-01 9999-12-31 Ostatní… Zeměděls… Zeměd… Zemědělsk… Ostatní …
-#>  7 1021     2010-01-01 9999-12-31 Organiz… Zeměděls… Zeměd… Regulace … Regulace…
-#>  8 1022     2010-01-01 9999-12-31 Organiz… Zeměděls… Zeměd… Regulace … Org. trh…
-#>  9 1023     2010-01-01 9999-12-31 Organiz… Zeměděls… Zeměd… Regulace … Organiza…
-#> 10 1024     2010-01-01 9999-12-31 Organiz… Zeměděls… Zeměd… Regulace … Reg.trhu…
-#> # … with 560 more rows
+#> # A tibble: 841 × 8
+#>    paragraf start_date end_date   nazev          skupina oddil pododdil poznamka
+#>    <chr>    <date>     <date>     <chr>          <chr>   <chr> <chr>    <chr>   
+#>  1 0000     2010-01-01 9999-12-31 Pro příjmy (t… Příjmy  Příj… Příjmy   Pro pří…
+#>  2 1011     2010-01-01 9999-12-31 Udržování výr… Zemědě… Země… Zeměděl… Zeměděl…
+#>  3 1012     2010-01-01 9999-12-31 Podnikání a r… Zemědě… Země… Zeměděl… Podniká…
+#>  4 1013     2010-01-01 9999-12-31 Genetický pot… Zemědě… Země… Zeměděl… Genetic…
+#>  5 1014     2010-01-01 9999-12-31 Ozdravování h… Zemědě… Země… Zeměděl… Ozdrav.…
+#>  6 1019     2010-01-01 9999-12-31 Ostatní zeměd… Zemědě… Země… Zeměděl… Ostatní…
+#>  7 1021     2010-01-01 9999-12-31 Organizace tr… Zemědě… Země… Regulac… Regulac…
+#>  8 1022     2010-01-01 9999-12-31 Organizace tr… Zemědě… Země… Regulac… Org. tr…
+#>  9 1023     2010-01-01 9999-12-31 Organizace tr… Zemědě… Země… Regulac… Organiz…
+#> 10 1024     2010-01-01 9999-12-31 Organizace tr… Zemědě… Země… Regulac… Reg.trh…
+#> # … with 831 more rows
 ```
 
 This contains all codes for this codelist, some of which are not valid
@@ -191,9 +185,9 @@ resolves this automatically.
 
 As you can see below, you can
 
--   add multiple codelists in one pipe
--   add a codelist without downloading it first - just pass its ID to
-    the function as a character instead of an object.
+- add multiple codelists in one pipe
+- add a codelist without downloading it first - just pass its ID to the
+  function as a character instead of an object.
 
 Codelists are also cached, but you have one in your namespace, you can
 pass it as an object, provided that it has the right columns.
@@ -202,43 +196,38 @@ pass it as an object, provided that it has the right columns.
 local_budgets %>% 
   sp_add_codelist(functional_categories) %>% 
   sp_add_codelist("polozka")
-#> ℹ Codelist file already in '~/sp_data/', not downloading. Set `redownload = TRUE` if needed.
-#> ℹ Processing codelist data
-#> ℹ Joining on 2 columns: polozka, poznamka.
-#>   This may indicate a problem with the data.
-#>   Set by if needed.
-#> # A tibble: 1,189,627 x 34
-#>    vykaz vtab  vykaz_year vykaz_month ucjed ico   kraj  nuts  polozka_typ
-#>    <chr> <chr> <chr>      <chr>       <chr> <chr> <chr> <chr> <chr>      
-#>  1 051   0002… 2019       09          1000… 7508… CZ03  CZ03  3          
-#>  2 051   0002… 2019       09          1000… 7508… CZ03  CZ03  3          
-#>  3 051   0001… 2019       09          1000… 0006… CZ010 CZ01… 2          
-#>  4 051   0001… 2019       09          1000… 0006… CZ010 CZ01… 2          
-#>  5 051   0001… 2019       09          1000… 0006… CZ010 CZ01… 2          
-#>  6 051   0001… 2019       09          1000… 0006… CZ010 CZ01… 2          
-#>  7 051   0001… 2019       09          1000… 0006… CZ010 CZ01… 2          
-#>  8 051   0001… 2019       09          1000… 0006… CZ010 CZ01… 2          
-#>  9 051   0001… 2019       09          1000… 0006… CZ010 CZ01… 2          
-#> 10 051   0001… 2019       09          1000… 0006… CZ010 CZ01… 2          
+#> ℹ Storing codelist in ']8;;file:///var/folders/fr/6f85xds52pq7g55fpmk4z7f80000gn/T//RtmpQjt91Z/var/folders/fr/6f85xds52pq7g55fpmk4z7f80000gn/T//RtmpQjt91Z]8;;'
+#> ℹ Set `dest_dir` for more control over downloaded files.
+#> ℹ Joining on 2 columns: polozka, poznamka.This may indicate a problem with the data.Set `by` if needed.
+#> # A tibble: 1,189,627 × 34
+#>    vykaz vtab   vykaz_year vykaz_month ucjed      ico    kraj  nuts  polozka_typ
+#>    <chr> <chr>  <chr>      <chr>       <chr>      <chr>  <chr> <chr> <chr>      
+#>  1 051   000200 2019       09          1000003163 75086… CZ03  CZ03  3          
+#>  2 051   000200 2019       09          1000003163 75086… CZ03  CZ03  3          
+#>  3 051   000100 2019       09          1000017768 00064… CZ010 CZ01… 2          
+#>  4 051   000100 2019       09          1000017768 00064… CZ010 CZ01… 2          
+#>  5 051   000100 2019       09          1000017768 00064… CZ010 CZ01… 2          
+#>  6 051   000100 2019       09          1000017768 00064… CZ010 CZ01… 2          
+#>  7 051   000100 2019       09          1000017768 00064… CZ010 CZ01… 2          
+#>  8 051   000100 2019       09          1000017768 00064… CZ010 CZ01… 2          
+#>  9 051   000100 2019       09          1000017768 00064… CZ010 CZ01… 2          
+#> 10 051   000100 2019       09          1000017768 00064… CZ010 CZ01… 2          
 #> # … with 1,189,617 more rows, and 25 more variables: paragraf <chr>,
 #> #   polozka <chr>, budget_adopted <dbl>, budget_amended <dbl>,
 #> #   budget_spending <dbl>, vykaz_date <date>,
 #> #   functional_categories_start_date <date>,
 #> #   functional_categories_end_date <date>, functional_categories_nazev <chr>,
 #> #   skupina <chr>, oddil <chr>, pododdil <chr>, poznamka <chr>,
-#> #   polozka_id <chr>, polozka_start_date <date>, polozka_end_date <date>,
-#> #   polozka_nazev <chr>, druh <chr>, trida <chr>, seskupeni <chr>,
-#> #   podseskupeni <chr>, kon_pol <lgl>, kon_okr <lgl>, kon_kraj <lgl>,
-#> #   kon_rep <lgl>
+#> #   polozka_id <chr>, polozka_start_date <date>, polozka_end_date <date>, …
 ```
 
 Download a whole “výkaz” (dataset/data dump):
 
 ``` r
 sp_get_dataset("finm", year = 2019) # dataset ID, see `sp_datasets`
-#> Warning: month not set. Using default of 12.
-#> • Set period parameters explicitly for reproducibility.
-#> ℹ Files already in ~/sp_data/finm/2019/12, not downloading. Set `redownload = TRUE` if needed.
+#> ! `month` not set. Using default of 12.
+#> ✔ Storing downloaded archive in ']8;;file:///var/folders/fr/6f85xds52pq7g55fpmk4z7f80000gn/T//RtmpQjt91Z/finm/2019/12/var/folders/fr/6f85xds52pq7g55fpmk4z7f80000gn/T//RtmpQjt91Z/finm/2019/12]8;;'
+#> • Set `dest_dir` for more control over downloaded files.
 ```
 
 This will put the files in a temp directory.
@@ -247,8 +236,8 @@ Then look at its documentation:
 
 ``` r
 statnipokladna::sp_get_dataset_doc("finm")
-#> ℹ Getting dataset documentation from http://monitor.statnipokladna.cz/data/struktura/finm.xlsx
-#> ℹ File downloaded to '~/sp_data/finm.xlsx'.
+#> ℹ Getting dataset documentation from <]8;;https://monitor.statnipokladna.cz/data/struktura/finm.xlsxhttps://monitor.statnipokladna.cz/data/struktura/finm.xlsx]8;;>
+#> ℹ File downloaded to ']8;;file:///var/folders/fr/6f85xds52pq7g55fpmk4z7f80000gn/T//RtmpQjt91Z/finm.xlsx/var/folders/fr/6f85xds52pq7g55fpmk4z7f80000gn/T//RtmpQjt91Z/finm.xlsx]8;;'.
 ```
 
 You can get details of all the available tables in the `sp_tables` data
@@ -292,7 +281,7 @@ only, stored in the [data issues
 vignette](https://petrbouchal.xyz/statnipokladna/articles/data-issues-cz.html).
 
 A basic glossary of some of the terms used in the data sets is at
-<http://monitor.statnipokladna.cz/metodika/>.
+<https://monitor.statnipokladna.cz/metodika/>.
 
 ### Note
 
@@ -304,30 +293,29 @@ maintaining the application.
 
 ### R Packages
 
--   [CzechData](https://jancaha.github.io/CzechData/) by @JanCaha for
-    (mainly) geospatial data about the Czech Republic (both admin.
-    boundaries and topology and geography)
--   [RCzechia](https://cran.r-project.org/package=RCzechia) for another
-    approach to Czech geospatial data and access to the official public
-    geocoder and reverse geocoder
--   [czso](https://github.com/petrbouchal/czso) for access to Czech
-    statistical open data
--   [eurostat](https://cran.r-project.org/package=eurostat) for access
-    to Eurostat data
--   [OECD](https://cran.r-project.org/package=OECD) for access to OECD
-    data, incl. a large amount of financial and economic data
+- [CzechData](https://jancaha.github.io/CzechData/) by @JanCaha for
+  (mainly) geospatial data about the Czech Republic (both admin.
+  boundaries and topology and geography)
+- [RCzechia](https://cran.r-project.org/package=RCzechia) for another
+  approach to Czech geospatial data and access to the official public
+  geocoder and reverse geocoder
+- [czso](https://github.com/petrbouchal/czso) for access to Czech
+  statistical open data
+- [eurostat](https://cran.r-project.org/package=eurostat) for access to
+  Eurostat data
+- [OECD](https://cran.r-project.org/package=OECD) for access to OECD
+  data, incl. a large amount of financial and economic data
 
 ### Other Czech public data
 
--   [National Open Data Catalogue](https://data.gov.cz/)
--   [KNOD](https://github.com/kokes/knod) by Ondřej Kokeš for an
-    overview of public data
--   [Hlídač státu](https://www.hlidacstatu.cz/) by @michalblaha for easy
-    (web and API) access to a large suite of transparency-focused
-    datasets and their integration (public disclosures of contracts,
-    tenders, political contributions…)
--   [CEDR](https://cedr.mfcr.cz/) for a database of public subsidies,
-    incl. to public bodies
+- [National Open Data Catalogue](https://data.gov.cz/)
+- [KNOD](https://github.com/kokes/knod) by Ondřej Kokeš for an overview
+  of public data
+- [Hlídač státu](https://www.hlidacstatu.cz/) by @michalblaha for easy
+  (web and API) access to a large suite of transparency-focused datasets
+  and their integration (public disclosures of contracts, tenders,
+  political contributions…)
+- CEDR for a database of public subsidies, incl. to public bodies
 
 ## Acknowledgments
 
