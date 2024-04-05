@@ -1,6 +1,6 @@
 Package: statnipokladna
 Title: Use Data from the Czech Public Finance Database
-Version: 0.7.2
+Version: 0.7.3
 Authors@R: 
     person("Petr", "Bouchal", , "pbouchal@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-0471-716X"))
@@ -23,10 +23,10 @@ VignetteBuilder: knitr
 Encoding: UTF-8
 Language: en
 LazyData: true
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.1
 NeedsCompilation: no
-Packaged: 2022-12-12 18:45:40 UTC; petr
+Packaged: 2024-04-05 08:56:54 UTC; petr
 Author: Petr Bouchal [aut, cre] (<https://orcid.org/0000-0002-0471-716X>)
 Maintainer: Petr Bouchal <pbouchal@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-12-12 19:00:02 UTC
+Date/Publication: 2024-04-05 09:10:02 UTC
