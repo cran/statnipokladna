@@ -20,8 +20,10 @@ sp_codelists <- tibble::tribble(~id, ~name,
                                 "druhuj", "Druh \\u00fa\\u010detn\\u00ed jednotky",
                                 "finmisto", "Finan\\u010dn\\u00ed m\\u00edsto (kapitoly, OSS)",
                                 "forma", "Forma \\u00fa\\u010detn\\u00ed jednotky",
+                                "isektor", "Institucion\\u00e1ln\\u00ed sektor organizace",
                                 "kapitola", "Kapitola rozpo\\u010detu",
                                 "katobyv", "Kategorie po\\u010dtu obyvatel",
+                                "nace", "Sektor NACE",
                                 "nuts", "Klasifikace \\u00fazemn\\u00edch statistick\\u00fdch jednotek NUTS",
                                 "paragraf", "Paragraf",
                                 "paragraf_long", "Paragraf (\\u0161estim\\u00edstn\\u00fd k\\u00f3d)",
@@ -144,8 +146,7 @@ sp_get_codelist_file <- function(codelist_id = NULL, url = NULL, dest_dir = NULL
 
   tf <- file.path(td, filename)
   if(file.exists(tf) & !redownload) {
-    cli::cli_alert_info(c(i = "Codelist file already in {.path {td}}, not downloading",
-                          i = "Set {.code redownload = TRUE} if needed."))
+    cli::cli_alert_info("Codelist file already in {.path {td}}, not downloading. Set {.code redownload = TRUE} if needed.")
   } else {
     if(is.null(url)) url <- sp_get_codelist_url(codelist_id)
     cli::cli_alert_info("Storing codelist in {.path {td}}")
@@ -284,9 +285,7 @@ sp_add_codelist <- function(data, codelist = NULL, period_column = .data$vykaz_d
   common_columns <- names(data)[names(data) %in% names(cl_data)]
   overlap <- length(common_columns)
   if (overlap > 1 & is.null(by)) {
-    cli::cli_alert_info(c("Joining on {.value {overlap}} columns: {.value {stringr::str_c(common_columns, collapse = ', ')}}.",
-                          "This may indicate a problem with the data.",
-                          "Set {.var by} if needed."))
+    cli::cli_alert_info("Joining on {.value {overlap}} columns: {.value {stringr::str_c(common_columns, collapse = ', ')}}. This may indicate a problem with the data. Set {.var by} if needed.", wrap = TRUE)
   } else if(overlap == 0) {cli::cli_abort(c(x = "No columns to join by.",
                                             "{cli::symbol$pointer} Are you sure you are merging the right codelist onto the right data?",
                                             i = "Set {.value by} if needed."))}
@@ -373,7 +372,7 @@ sp_get_codelist_url <- function(codelist_id, check_if_exists = TRUE) {
 add_codelist <- function(data, codelist = NULL, period_column = .data$vykaz_date,
                          redownload = FALSE,
                          dest_dir = NULL) {
-  lifecycle::deprecate_warn("0.5.2", "statnipokladna::add_codelist()", "sp_add_codelist()")
+  lifecycle::deprecate_stop("0.5.2", "statnipokladna::add_codelist()", "sp_add_codelist()")
   sp_add_codelist(data = data, codelist = codelist, period_column = period_column,
                   redownload = redownload, dest_dir = dest_dir)
 }
@@ -392,6 +391,6 @@ add_codelist <- function(data, codelist = NULL, period_column = .data$vykaz_date
 #' @family Core workflow
 
 get_codelist <- function(codelist_id, n = NULL, dest_dir = NULL, redownload = FALSE) {
-  lifecycle::deprecate_warn("0.5.2", "statnipokladna::get_codelist()", "sp_get_codelist()")
+  lifecycle::deprecate_stop("0.5.2", "statnipokladna::get_codelist()", "sp_get_codelist()")
   sp_get_codelist(codelist_id = codelist_id, n = n, dest_dir = dest_dir, redownload = redownload)
 }
