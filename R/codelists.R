@@ -4,13 +4,13 @@
 #' Contains IDs and names of all (most) available codelists that can be retrieved by sp_get_codelist.
 #'
 #' The `id` is to be used as the `codelist_id` parameter in `sp_get_codelist`.
-#' See <https://monitor.statnipokladna.cz/datovy-katalog/ciselniky> for a more detailed
+#' See <https://monitor.statnipokladna.gov.cz/datovy-katalog/ciselniky> for a more detailed
 #' descriptions and a GUI for exploring the lists.
 #'
 #' @format A data frame with 27 rows and 2 variables:
 #' \describe{
 #'   \item{\code{id}}{character. ID, used as `codelist_id` argument in `sp_get_codelist`.}
-#'   \item{\code{name}}{character. Short name, mostly corresponds to title used on statnipokladna.cz.}
+#'   \item{\code{name}}{character. Short name, mostly corresponds to title used on statnipokladna.gov.cz.}
 #' }
 #' @family Lists of available entities
 sp_codelists <- tibble::tribble(~id, ~name,
@@ -196,7 +196,7 @@ sp_get_codelist <- function(codelist_id, n = NULL, dest_dir = NULL, redownload =
 
 #' Get/open URL of codelist viewer
 #'
-#' Returns a URL for the online codelist browser in monitor.statnipokladna.cz and opens it in browser if open = TRUE.
+#' Returns a URL for the online codelist browser in monitor.statnipokladna.gov.cz and opens it in browser if open = TRUE.
 #'
 #' @param codelist_id A codelist ID. See `id` column in `sp_codelists` for a list of available codelists.
 #' @param open Whether to open URL in browser. Defaults to TRUE.
@@ -352,45 +352,4 @@ sp_get_codelist_url <- function(codelist_id, check_if_exists = TRUE) {
     check_online(x)
   }
   return(x)
-}
-
-
-
-# Deprecated --------------------------------------------------------------
-
-#' Deprecated: Add codelist data to downloaded data
-#'
-#' Deprecated, use `sp_add_codelist()` instead.\cr\cr
-#'
-#' `r lifecycle::badge("deprecated")`
-#'
-#' @inheritParams sp_add_codelist
-#'
-#' @return A [tibble][tibble::tibble-package] of same length as `data`, with added columns from `codelist`. See Details.
-#' @family Core workflow
-#' @export
-add_codelist <- function(data, codelist = NULL, period_column = .data$vykaz_date,
-                         redownload = FALSE,
-                         dest_dir = NULL) {
-  lifecycle::deprecate_stop("0.5.2", "statnipokladna::add_codelist()", "sp_add_codelist()")
-  sp_add_codelist(data = data, codelist = codelist, period_column = period_column,
-                  redownload = redownload, dest_dir = dest_dir)
-}
-
-
-#' Deprecated: Get codelist
-#'
-#' Deprecated: use `sp_get_codelist()`\cr\cr
-#'
-#' `r lifecycle::badge("deprecated")`
-#'
-#' @inheritParams sp_get_codelist
-#'
-#' @return A [tibble][tibble::tibble-package]
-#' @export
-#' @family Core workflow
-
-get_codelist <- function(codelist_id, n = NULL, dest_dir = NULL, redownload = FALSE) {
-  lifecycle::deprecate_stop("0.5.2", "statnipokladna::get_codelist()", "sp_get_codelist()")
-  sp_get_codelist(codelist_id = codelist_id, n = n, dest_dir = dest_dir, redownload = redownload)
 }

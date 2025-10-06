@@ -3,6 +3,7 @@ sp_datasets_i <- tibble::tribble(~id, ~name, ~implemented, ~dir,
                                  "finm", "FIN 2-12 M - Pln\\u011bn\\u00ed rozpo\\u010dtu M\\u0158O", F, "FinM",
                                  "finu", "FIN 2-04 U - Pln\\u011bn\\u00ed rozpo\\u010dtu KAP, OSS a SF (2010 - 2014)", F, "FinU",
                                  "finsf", "FIN 2-04 U - Pln\\u011bn\\u00ed rozpo\\u010dtu SF", F, "FinSF",
+                                 "finspo", "FIN SPO - Pln\\u011bn\\u00ed rozpo\\u010dtu SPO", F, "FinSPO",
                                  "misris", "FIN 1-12 OSS - Pln\\u011bn\\u00ed rozpo\\u010dtu KAP a OSS", F, "FinOSS",
                                  "rozv", "Rozvaha", F, "Rozvaha",
                                  "ppt", "P\\u0159ehled pen\\u011b\\u017en\\u00edch tok\\u016f", F, "PenezniToky",
@@ -17,7 +18,7 @@ sp_datasets_i <- tibble::tribble(~id, ~name, ~implemented, ~dir,
 #'
 #' Contains IDs and names of all available datasets that can be retrieved by get_dataset.
 #'
-#' See <https://monitor.statnipokladna.cz/datovy-katalog/transakcni-data> for a more detailed descriptions
+#' See <https://monitor.statnipokladna.gov.cz/datovy-katalog/transakcni-data> for a more detailed descriptions
 #' of the datasets.
 #'
 #' @format A data frame with 9 rows and 3 variables:
@@ -176,42 +177,4 @@ sp_get_dataset <- function(dataset_id, year, month = 12,
                                ~get_one_dataset(dataset_id, .x, .y, dest_dir = dest_dir,
                                                 redownload = redownload))
   invisible(file_list)
-}
-
-# Deprecated --------------------------------------------------------------
-
-
-#' Deprecated: Retrieve and read dataset from statnipokladna
-#'
-#' Deprecated, use `sp_get_dataset()` instead.\cr\cr
-#'
-#' `r lifecycle::badge("deprecated")`
-#'
-#' @inheritParams sp_get_dataset
-#'
-#' @return character (link) if download = TRUE, nothing otherwise.
-#' @keywords internal
-#' @export
-get_dataset <- function(dataset_id, year, month = 12,
-                        dest_dir = NULL, redownload = FALSE) {
-  lifecycle::deprecate_stop("0.5.2", "statnipokladna::get_dataset()", "sp_get_dataset()")
-  sp_get_dataset(dataset_id = dataset_id, year = year, month = month,
-                 dest_dir = dest_dir, redownload = redownload)
-}
-
-
-#' Deprecated: Get dataset documentation
-#'
-#' Deprecated, use `sp_get_dataset_doc()` instead.\cr\cr
-#'
-#' `r lifecycle::badge("deprecated")`
-#'
-#' @inheritParams sp_get_dataset_doc
-#'
-#' @keywords internal
-#' @return a [tibble][tibble::tibble-package]
-#' @export
-get_dataset_doc <- function(dataset_id, dest_dir = ".", download = TRUE) {
-  lifecycle::deprecate_stop("0.5.2", "statnipokladna::get_dataset_doc()", "sp_get_dataset_doc()")
-  sp_get_dataset_doc(dataset_id = dataset_id, dest_dir = dest_dir, download = download)
 }

@@ -239,6 +239,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
+<p>how-the-data-works-cz.R</p>
 <blockquote>
 <p>Note: for a basic English-language intro to the package, see the <a href="https://petrbouchal.xyz/statnipokladna/index.html">index page</a>
 (basic usage) and the <a href="statnipokladna.html">Get started
@@ -266,29 +267,29 @@ request</a> nebo <a href="https://github.com/petrbouchal/statnipokladna/issues">
 <div id="kde-brát-informace" class="section level2">
 <h2>Kde brát informace</h2>
 <ul>
-<li><a href="https://monitor.statnipokladna.cz/metodika/#prijmy">základní
+<li><a href="https://monitor.statnipokladna.gov.cz/metodika/#prijmy">základní
 glosář k terminologii</a></li>
 <li><a href="https://www.zakonyprolidi.cz/cs/2002-323#p2">vyhláška o
 rozpočtové skladbě</a> - k tomu viz níže</li>
-<li>v popisu struktury v excelech <a href="https://monitor.statnipokladna.cz/datovy-katalog/transakcni-data">u
+<li>v popisu struktury v excelech <a href="https://monitor.statnipokladna.gov.cz/datovy-katalog/transakcni-data">u
 jednotlivých datasetů</a></li>
-<li>ledacos se hodí bazálně ověřit proti ručně sestavené tabulce v <a href="https://monitor.statnipokladna.cz/analyza/">analytickém
+<li>ledacos se hodí bazálně ověřit proti ručně sestavené tabulce v <a href="https://monitor.statnipokladna.gov.cz/analyza/">analytickém
 rozhraní</a></li>
 <li>při ověřování může taky pomoct např.
 <ul>
 <li>příloha vyhlášky o RUD (<a href="https://www.mfcr.cz/cs/legislativa/legislativni-dokumenty/2019/vyhlaska-c-219-2019-sb-36077">2019</a>)</li>
 <li>státní závěrečné účty nejlépe z <a href="https://www.psp.cz/sqw/tisky.sqw">webu sněmovny</a> (hledání
 “státního závěrečného účtu”)</li>
-<li>údaje o výběru daní od Finanční správy: (<a href="https://www.financnisprava.cz/cs/dane/kraje-a-obce/danove-prijmy-kraju-a-obci">tabulky</a>,
-<a href="https://www.financnisprava.cz/cs/dane/analyzy-a-statistiky/udaje-z-vyberu-dani">statistiky</a>)</li>
+<li>údaje o výběru daní od Finanční správy: (<a href="https://financnisprava.gov.cz/cs/dane/kraje-a-obce/danove-prijmy-kraju-a-obci">tabulky</a>,
+<a href="https://financnisprava.gov.cz/cs/dane/analyzy-a-statistiky/udaje-z-vyberu-dani">statistiky</a>)</li>
 </ul></li>
 </ul>
 </div>
 <div id="soustava-prvků-dostupných-ze-státní-pokladny" class="section level2">
 <h2>Soustava prvků dostupných ze státní pokladny</h2>
 <ul>
-<li><a href="https://monitor.statnipokladna.cz/datovy-katalog/ciselniky">číselníky</a></li>
-<li>výkazy (publikovány jako <a href="https://monitor.statnipokladna.cz/datovy-katalog/transakcni-data">“transakční
+<li><a href="https://monitor.statnipokladna.gov.cz/datovy-katalog/ciselniky">číselníky</a></li>
+<li>výkazy (publikovány jako <a href="https://monitor.statnipokladna.gov.cz/datovy-katalog/transakcni-data">“transakční
 data”</a>) bez téměř jakýkcholi lidsky čitelných identifikátorů - k tomu
 je potřeba napojit číselníky</li>
 <li>části výkazu (tabulky - v datech označeny v daném sloupci)</li>
@@ -296,7 +297,7 @@ je potřeba napojit číselníky</li>
 <p>Prakticky to vypadá tak, že jeden balík s výkazem obsahuje více CSV
 souborů, kdy jednotlivé soubory obsahují jednu nebo víc tabulek daného
 výkazu.</p>
-<p>Číselníky jsou v XML, ale dají se i prohlížet (<a href="https://monitor.statnipokladna.cz/datovy-katalog/ciselniky/prohlizec/13">příklad</a>)
+<p>Číselníky jsou v XML, ale dají se i prohlížet (<a href="https://monitor.statnipokladna.gov.cz/datovy-katalog/ciselniky/prohlizec/13">příklad</a>)
 a tamtéž stáhnout v CSV.</p>
 <p>Pozor: číselníky jsou časově determinované a pokud neodfiltrujete
 položky nerelevantní pro dané časové období, můžou při napojování JOINem

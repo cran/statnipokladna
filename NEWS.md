@@ -1,3 +1,19 @@
+# statnipokladna 0.7.7
+
+* fix 302 redirect for URLs in vignette to avoid CRAN NOTE
+
+# statnipokladna 0.7.6
+
+* fix remaining URLs that moved to gov.cz
+
+# statnipokladna 0.7.5
+
+* added Státní příspěvkové organizace budget return to list of tables and datasets (#77)
+* switched to new statnipokladna.gov.cz domain
+* removed exported functions not named in the `sp_*()` convention; these have been deprecated in previous versions.
+* fixed column naming warnings in budget-local and possibly other datasets (#104)
+* add dependency on 4 4.1 to allow using native pipe and pass CRAN checks 
+
 # statnipokladna 0.7.4
 
 * hard-deprecate functions with old naming scheme (those not starting with `sp_`); they will be removed in the next release
@@ -84,7 +100,7 @@ Functions with names not starting with `sp_` are deprecated and emit a warning. 
 
 ## Bug fixes
 
-* adapt to new URL scheme for data exports at statnipokladna.cz, fixes #74
+* adapt to new URL scheme for data exports at statnipokladna.gov.cz, fixes #74
 * simple codelists with no `*_date` columns now work in `sp_add_codelist()`, fixes #66
 
 ## Minor improvements

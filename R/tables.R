@@ -15,6 +15,7 @@ sp_tables_i <- tibble::tribble(~table_num, ~report_num, ~id,   ~table_code,   ~d
                                0,           0,          "budget-central-old-subsidies",     "finu_dotace",  "finu",      "FINU108",    "Dota\\u010dn\\u00ed financov\\u00e1n\\u00ed - poskytnut\\u00e9 prost\\u0159edky", "pre-2015 only",
                                0,           0,          "budget-central",     "misris",      "misris",    "/MIS-RIS",    "Pln\\u011bn\\u00ed rozpo\\u010dtu \\u00fast\\u0159edn\\u011b \\u0159\\u00edzen\\u00fdch organizac\\u00ed od 2015", "post-2014 only",
                                0,           0,          "budget-statefunds",     "finsf_budget",      "finsf",    "FINSF01",    "Pln\\u011bn\\u00ed rozpo\\u010dtu st\\u00e1tn\\u00edch fond\\u016f (\\u010c\\u00e1st I a II: p\\u0159\\u00edjmy a v\\u00fddaje)", "post-2014 only",
+                               0,           55,         "budget-contributory",     "finspo_budget",      "finspo",    "SPO",    "Pln\\u011bn\\u00ed rozpo\\u010dtu st\\u00e1tn\\u00edch p\\u0159\\u00edsp\\u011bvkov\\u00fdch organizac\\u00ed", "post-2014 only",
                                0,           0,          "profit-and-loss-statefunds",     "finsf_vykzz",      "finsf",    "FINSF02",    "Pln\\u011bn\\u00ed rozpo\\u010dtu st\\u00e1tn\\u00edch fond\\u016f (\\u010c\\u00e1st III: v\\u00fdkaz zisk\\u016f a ztr\\u00e1t)", "post-2014 only",
                                0,           0,          "cash-flow-statefunds",     "finsf_cashflow",      "finsf",    "FINSF03",    "Pln\\u011bn\\u00ed rozpo\\u010dtu st\\u00e1tn\\u00edch fond\\u016f (\\u010c\\u00e1st IV: p\\u0159ehled pen\\u011b\\u017en\\u00edch tok\\u016f)", "post-2014 only",
                                0,           0,          "budget-statefunds-purposegrants",     "finsf_ucel",      "finsf",    "FINSF04",    "Pln\\u011bn\\u00ed rozpo\\u010dtu st\\u00e1tn\\u00edch fond\\u016f (\\u010c\\u00e1st IX: dota\\u010dn\\u00ed financov\\u00e1n\\u00ed - poskytnut\\u00e9 prost\\u0159edky)", "post-2014 only"
@@ -27,7 +28,7 @@ sp_tables_i <- tibble::tribble(~table_num, ~report_num, ~id,   ~table_code,   ~d
 #' List of available tables (PARTIAL)
 #'
 #' Contains IDs and names of all available tables that can be
-#' retrieved by sp_get_table. Look inside the XLS documentation for each dataset at <https://monitor.statnipokladna.cz/datovy-katalog/transakcni-data>
+#' retrieved by sp_get_table. Look inside the XLS documentation for each dataset at <https://monitor.statnipokladna.gov.cz/datovy-katalog/transakcni-data>
 #' to see more detailed descriptions. Note that tables do not correspond to the tabulka/`vtab` attribute of the tables, they represent files inside datasets.
 #'
 #' @format A data frame with 2 rows and 4 variables:
@@ -107,7 +108,7 @@ sp_load_table <- function(path, ico = NULL) {
   suppressWarnings(suppressMessages(
     dt <- readr::read_csv2(path, col_types = readr::cols(.default = readr::col_character()))))
 
-  dt_new_names <- stringr::str_remove_all(names(dt), "\"[A-\\u017da-\\u017e\\s\\-\\./]*\"") |>
+  dt_new_names <- stringr::str_remove_all(names(dt), '^"[^"]+"') |>
     stringr::str_remove_all("/BIC/")
 
   dt <- dt %>%
@@ -120,7 +121,7 @@ sp_load_table <- function(path, ico = NULL) {
   if(!is.null(ico)) dt <- dt[dt$`ZC_ICO:ZC_ICO` %in% ico,]
 
   dt <- dt |>
-    purrr::set_names(stringr::str_remove(names(dt), "^[A-Z_0-9/]*:")) %>%
+    purrr::set_names(stringr::str_remove(names(dt), "^.*?:")) %>%
     dplyr::mutate_at(dplyr::vars(dplyr::starts_with("ZU_")), ~switch_minus(.) %>% as.numeric(.)) %>%
     tidyr::extract(.data$`0FISCPER`, c("vykaz_year", "vykaz_month"), "([0-9]{4})0([0-9]{2})") %>%
     dplyr::mutate_at(dplyr::vars(dplyr::ends_with("_date")), lubridate::dmy) %>%
@@ -166,8 +167,11 @@ sp_load_table <- function(path, ico = NULL) {
                       ZU_STAVPO = "after",
                       ZU_ZVYS = "increase",
                       ZU_SNIZ = "decrease",
+                      ZU_SKVMR = "budget_spending_lastyr",
                       ZU_BEZUO = "current",
                       ZU_SYNUC = "synuc",
+                      ZU_SSVN1 = "budget_outlook_nplus1",
+                      ZU_SSVN2 = "budget_outlook_nplus2",
                       `0FUNC_AREA` = "paragraf")
   return(dt)
 }
@@ -280,7 +284,7 @@ sp_load_table <- function(path, ico = NULL) {
 #' @param year year, numeric, 2015-2019 for some datasets, 2010-2020 for others.
 #' Can be a vector of length > 1 (see Details for how to work with data across time periods.).
 #' @param month month, numeric. Must be 3, 6, 9 or 12. Can be a vector of length > 1 (see details).
-#' @param ico ID(s) of org to return, character of length one or more. If unset, returns all orgs. ID not checked for correctness/existence. See <https://monitor.statnipokladna.cz/datovy-katalog/prohlizec-ciselniku/ucjed> to look up ID of any org in the dataset.
+#' @param ico ID(s) of org to return, character of length one or more. If unset, returns all orgs. ID not checked for correctness/existence. See <https://monitor.statnipokladna.gov.cz/datovy-katalog/prohlizec-ciselniku/ucjed> to look up ID of any org in the dataset.
 #' @param dest_dir character. Directory in which downloaded files will be stored.
 #' If left unset, will use the `statnipokladna.dest_dir` option if the option is set, and `tempdir()` otherwise. Will be created if it does not exist.
 #' @param redownload Redownload even if recent file present? Defaults to FALSE.
@@ -334,20 +338,3 @@ sp_get_table <- function(table_id, year, month = 12, ico = NULL,
 # onyr <- c(2018) %>% purrr::map_dfr(~ sp_get_table(2, year = ., month = 12))
 # onyr <- c(2018) %>% purrr::map_dfr(~ sp_get_table(1, year = ., month = 12))
 
-# Deprecated --------------------------------------------------------------
-
-#' Deprecated: Get a statnipokladna table\cr\cr
-#' Deprecated, use `sp_get_table()` instead.
-#'
-#' `r lifecycle::badge("deprecated")`
-#'
-#' @inheritParams sp_get_table
-#'
-#' @keywords internal
-#'
-#' @return a [tibble][tibble::tibble-package]
-#' @export
-get_table <- function(table_id, year, month = 12, ico = NULL,
-                      redownload = FALSE, dest_dir = NULL) {
-  lifecycle::deprecate_stop("0.5.2", "statnipokladna::get_table()", "sp_get_table()")
-}

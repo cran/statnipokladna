@@ -22,7 +22,7 @@ Can be a vector of length > 1 (see Details for how to work with data across time
 
 \item{month}{month, numeric. Must be 3, 6, 9 or 12. Can be a vector of length > 1 (see details).}
 
-\item{ico}{ID(s) of org to return, character of length one or more. If unset, returns all orgs. ID not checked for correctness/existence. See \url{https://monitor.statnipokladna.cz/datovy-katalog/prohlizec-ciselniku/ucjed} to look up ID of any org in the dataset.}
+\item{ico}{ID(s) of org to return, character of length one or more. If unset, returns all orgs. ID not checked for correctness/existence. See \url{https://monitor.statnipokladna.gov.cz/datovy-katalog/prohlizec-ciselniku/ucjed} to look up ID of any org in the dataset.}
 
 \item{redownload}{Redownload even if recent file present? Defaults to FALSE.}
 
@@ -146,8 +146,6 @@ oneorg_multihalfyears <- sp_get_table("budget-central", 2017:2018, c(6, 12), ico
 }
 \seealso{
 Other Core workflow: 
-\code{\link{add_codelist}()},
-\code{\link{get_codelist}()},
 \code{\link{sp_add_codelist}()},
 \code{\link{sp_get_codelist}()},
 \code{\link{sp_get_dataset}()}
